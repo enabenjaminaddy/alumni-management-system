@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Profile Form</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for Django form fields rendered with as_p */
+        .django-form p {
+            margin-bottom: 1.5rem;
+        }
+        .django-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151; /* gray-700 */
+        }
+        .django-form input,
+        .django-form select,
+        .django-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #D1D5DB; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .django-form input:focus,
+        .django-form select:focus,
+        .django-form textarea:focus {
+            outline: none;
+            border-color: #4f46e5; /* indigo-600 */
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-md">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Alumni Profile</h1>
+            <p class="text-gray-500">Please fill out your information below.</p>
+        </div>
+
+        <!-- 
+          This is your Django form. 
+          - The `method="POST"` is required to send data to the server.
+          - The `action=""` attribute means the form will submit to the same URL it was loaded from.
+        -->
+        <form method="POST" action="">
+            <!-- 
+              **IMPORTANT DJANGO TAG**
+              This tag adds a hidden input with a CSRF token. 
+              It is required for security and to prevent cross-site request forgery.
+              Your form will not work without it.
+            -->
+            {% csrf_token %}
+
+            <!-- 
+              **DJANGO FORM RENDERING**
+              This is where Django will automatically render all the fields
+              from the form instance you pass in your view.
+              
+              `{{ form.as_p }}` renders each field wrapped in a <p> tag.
+              You can also use `{{ form.as_table }}` or `{{ form.as_ul }}`.
+            -->
+            <div class="django-form">
+                {{ form.as_p }}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 flex space-x-4">
+                <!-- Back Button -->
+                <a href="javascript:history.back()" class="w-1/2 text-center bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors no-underline">
+                    Back
+                </a>
+                <!-- Submit Button -->
+                <button type="submit" class="w-1/2 bg-indigo-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

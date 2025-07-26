@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Basic Reset & Setup --- */
+        :root {
+            --primary-color: #4A90E2; /* A nice, friendly blue */
+            --secondary-color: #50E3C2; /* A vibrant accent color */
+            --dark-text: #333;
+            --light-text: #777;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        /* --- Page Structure --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Header & Navigation --- */
+        .main-header {
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        .main-nav ul li {
+            margin-left: 20px;
+        }
+
+        .main-nav a {
+            color: var(--dark-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* --- Welcome Section --- */
+        .welcome-section {
+            text-align: center;
+            padding: 5rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .welcome-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- Profile Card Section --- */
+        .profile-section {
+            display: flex;
+            justify-content: center;
+            padding: 2rem 0 5rem 0;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s 0.3s ease-out forwards;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-card .subtitle {
+            color: var(--light-text);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3a7ac8;
+            transform: translateY(-2px);
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .welcome-section h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <nav class="main-nav">
+                <a href="#" class="logo">AlumniConnect</a>
+                <ul>
+                    <li><a href="#">Events</a></li>
+                    <li><a href="#">Directory</a></li>
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="welcome-section container">
+            <!-- This content can be dynamically changed based on the logged-in user -->
+            <h1>Welcome Back User</h1>
+            <p>We're thrilled to see you again. Connect with fellow graduates, explore recent events, and keep your profile updated.</p>
+        </section>
+
+        <section class="profile-section container">
+            <div class="profile-card">
+                <img src="https://placehold.co/100x100/4A90E2/FFFFFF?text=JD" alt="User Avatar" class="profile-avatar">
+                
+                <h2>Your Alumni Profile</h2>
+                
+                <p class="subtitle"></p>
+                
+                <p class="summary" style="color: #555; margin-bottom: 2rem;">
+                    Keeping your information current helps you reconnect with old friends and opens up new networking opportunities.
+                </p>
+                <a href="{% url 'edit_form' %}" class="btn" id="edit-profile-btn">Edit Your Profile</a>
+            </div>
+            
+        </section>
+    </main>
+
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editProfileButton = document.getElementById('edit-profile-btn');
+
+            editProfileButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevents the link from navigating
+                
+                // In a real application, you would navigate to the edit page.
+                // For this example, we'll just show an alert.
+                // alert('Navigating to the profile edit page!');
+                
+                // Example of navigation in a real app:
+                // window.location.href = '/path/to/edit-profile-page';
+            });
+        });
+    </script> -->
+
+</body>
+</html>
