@@ -7,7 +7,7 @@ class AlumniProfileForm(ModelForm):
     class Meta:
         model = AlumniProfile
         fields = [
-            'first_name', 'last_name', 'current_address', 'phone_number',
+            'profile_picture', 'first_name', 'last_name', 'current_address', 'phone_number',
             'email', 'social_media_accounts', 'graduation_year', 
             'course_studied', 'employment_status', 'company_name',
             'company_location', 'skills_acquired', 'work_experience',
@@ -17,4 +17,6 @@ class AlumniProfileForm(ModelForm):
         widgets = {
             'social_media_accounts': forms.Textarea(attrs={'rows': 3}),
             'testimonial': forms.Textarea(attrs={'rows': 4}),
+            'skills_acquired': forms.Textarea(attrs={'rows': 3}),
+            'work_experience': forms.Textarea(attrs={'rows': 3}),
         }

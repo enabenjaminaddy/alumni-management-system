@@ -139,6 +139,26 @@
             margin-bottom: 1.5rem;
         }
 
+        .profile-avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 4px solid var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .initials {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
         .profile-card h2 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
@@ -213,7 +233,13 @@
 
         <section class="profile-section container">
             <div class="profile-card">
-                <img src="https://placehold.co/100x100/4A90E2/FFFFFF?text=JD" alt="User Avatar" class="profile-avatar">
+                {% if user.alumni_profile.profile_picture %}
+                <img src="{{ user.alumni_profile.profile_picture.url }}" alt="Profile Picture" class="profile-avatar">
+                {% else %}
+                <div class="profile-avatar-placeholder">
+                    <span class="initials">{{ user.alumni_profile.get_initials|default:"UN" }}</span>
+                </div>
+                {% endif %}
                 
                 <h2>Your Alumni Profile</h2>
                 
