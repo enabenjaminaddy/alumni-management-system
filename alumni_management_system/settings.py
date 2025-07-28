@@ -75,23 +75,25 @@ WSGI_APPLICATION = 'alumni_management_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
+# SQLite Configuration (temporarily for testing role system)
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "alumni",
-        "USER": "postgres",
-        "PASSWORD": "Postgres.ayadata.21",
-        "HOST": "3.232.163.161",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# PostgreSQL Configuration (switch back when conda env is active)
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "alumni",
+#         "USER": "postgres",
+#         "PASSWORD": "Postgres.ayadata.21",
+#         "HOST": "3.232.163.161",
+#         "PORT": "5432",
+#     }
+# }
 
 
 # Password validation
@@ -136,6 +138,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home/'  # Redirect to home page after login
+LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'

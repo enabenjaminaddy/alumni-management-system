@@ -200,8 +200,15 @@
     <main>
         <section class="welcome-section container">
             <!-- This content can be dynamically changed based on the logged-in user -->
-            <h1>Welcome Back User</h1>
+            <h1>Welcome Back {{ user.first_name|default:user.username }}</h1>
             <p>We're thrilled to see you again. Connect with fellow graduates, explore recent events, and keep your profile updated.</p>
+            {% if user_role %}
+            <div class="mt-4">
+                <span class="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
+                    Role: {{ user_role|title|capfirst }}
+                </span>
+            </div>
+            {% endif %}
         </section>
 
         <section class="profile-section container">

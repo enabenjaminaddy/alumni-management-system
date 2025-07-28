@@ -68,11 +68,10 @@
                         </div>
                     {% endif %}
 
-                    <!-- Email Input -->
+                    <!-- Username Input -->
                     <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                        <input type="email" name="username" id="email" class="form-input" placeholder="you@example.com" required>
-                        <!-- For Django's default auth, name should be 'username' -->
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <input type="text" name="username" id="username" class="form-input" placeholder="Enter your username" required>
                     </div>
 
                     <!-- Password Input -->
@@ -109,10 +108,14 @@
                     </a>
                 </div>
 
-                <p class="text-center text-sm text-gray-500 mt-8">
-                    Don't have an account? 
-                    <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
-                </p>
+                <div class="mt-8 p-4 bg-gray-50 rounded-md">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Test Accounts:</h3>
+                    <div class="text-xs text-gray-600 space-y-1">
+                        <p><strong>Organization Admin:</strong> orgadmin / admin123</p>
+                        <p><strong>Alumni:</strong> alumni1 / alumni123</p>
+                        <p><strong>Alumni:</strong> alumni2 / alumni123</p>
+                    </div>
+                </div>
 
             </div>
         </div>
