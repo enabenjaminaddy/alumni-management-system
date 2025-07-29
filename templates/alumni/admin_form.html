@@ -79,7 +79,7 @@
         <div class="bg-white shadow-2xl rounded-lg border border-purple-100">
             <div class="px-6 py-4 border-b border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50">
                 <h2 class="text-lg font-medium text-org-secondary">Alumni Information</h2>
-                <p class="text-sm text-gray-600">Fill out the form below to {{ 'update' if alumni else 'create' }} the alumni
+                <p class="text-sm text-gray-600">Fill out the form below to {% if alumni %}update{% else %}create{% endif %} the alumni
                     profile for Henry Djaba Memorial Foundation.</p>
             </div>
 
@@ -229,7 +229,7 @@
                     </a>
                     <button type="submit"
                         class="flex-1 foundation-gradient text-white font-semibold py-3 px-4 rounded-md hover:opacity-90 transition-all shadow-lg">
-                        {{ 'Update Alumni' if alumni else 'Create Alumni' }}
+                        {% if alumni %}Update Alumni{% else %}Create Alumni{% endif %}
                     </button>
                 </div>
             </form>

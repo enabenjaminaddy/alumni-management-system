@@ -88,11 +88,11 @@
                     <select id="employment" name="employment"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All</option>
-                        <option value="employed" {% if employment_filter and employment_filter==employed %} selected{% endif %}>Employed
+                        <option value="employed" {% if employment_filter and employment_filter == employed %} selected{% endif %}>Employed
                         </option>
-                        <option value="self_employed" {% if employment_filter and employment_filter==self_employed %} selected{% endif %}>
+                        <option value="self_employed" {% if employment_filter and employment_filter == self_employed %} selected{% endif %}>
                             Self-Employed</option>
-                        <option value="seeking" {% if employment_filter and employment_filter==seeking %} selected{% endif %}>Seeking
+                        <option value="seeking" {% if employment_filter and employment_filter == seeking %} selected{% endif %}>Seeking
                             Employment</option>
                     </select>
                 </div>
@@ -103,7 +103,7 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All Courses</option>
                         {% for course in course_choices %}
-                        <option value="{{ course }}" {% if course_filter and course_filter==course %} selected{% endif %}>{{ course }}</option>
+                        <option value="{{ course }}" {% if course_filter and course_filter == course %} selected{% endif %}>{{ course }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -114,7 +114,7 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All Years</option>
                         {% for year in year_choices %}
-                        <option value="{{ year }}" {% if year_filter and year_filter==year %} selected{% endif %}>{{ year }}</option>
+                        <option value="{{ year }}" {% if year_filter and year_filter == year %} selected{% endif %}>{{ year }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -192,8 +192,7 @@
                                             {% if alumni.profile_picture %}
                                             <img class="h-10 w-10 rounded-full object-cover" src="{{ alumni.profile_picture.url }}" alt="Profile">
                                             {% else %}
-                                            <div
-                                                class="h-10 w-10 rounded-full bg-gradient-to-br from-org-secondary to-org-primary flex items-center justify-center">
+                                            <div class="h-10 w-10 rounded-full bg-org-primary flex items-center justify-center">
                                                 <span class="text-white text-sm font-medium">{{ alumni.get_initials }}</span>
                                             </div>
                                             {% endif %}
@@ -311,7 +310,7 @@
         // Update selected count
         function updateSelectedCount() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
-            do etElementById('selected-count').te                    selected + ' selected';
+            document.getElementById('selected-count').textContent = selected + ' selected';
         }
 
         // Add event listeners to individual checkboxes
@@ -319,39 +318,45 @@
             checkbox.addEventListener('change', updateSelectedCount);
         });
 
-            // Handle bulk export
-            function handleBulkExpo                        const selected = document.querySelectorAll('.alumni            x:check            gth;
-            if (s === 0) {
-                custo                se select at least one alumni profile.', 'No Selection');
-                retur
-            }
-
-            cu                    ort ' + selected + ' alumni profile(s) to CSV ? ', 'Export Alumni').then(funct                    
-                (conf                                  const form = document.getElementById('bulk-form');
-            const a ctionInput = do ment('input');
-                          tionInput.type = 'hidden';
-                    acti                        on';
-            actionInput.value = 'export'                           form.appendChild(actionInpu                             form.submit();
-                                   });
-        }
-
-            //                                 function handleBulkDelete() {
+        // Handle bulk export
+        function handleBulkExport() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
             if (selected === 0) {
-                custo                        se select at least one alumni profile.', 'No Selection');
+                customAlert('Please select at least one alumni profile.', 'No Selection');
                 return;
             }
 
-                customConfirm('Are you sure you want to delete ' + selected + ' alumni profile(s)? This action cannot be undone.', 'Delete Alumni').then(function (confirmed) {
-                    if (confirmed) {
-                        const form = document.getElementById('bulk-form');
-                        const a ctionInput = document.createElement('input');
-                        actionInput.type = 'hidden';
-                        actionInput.name = 'action';
-                        actionInput.value = 'delete';
-                        form.appendChild(actionInput);
-                        form.submit();
-                    }
+            customConfirm('Export ' + selected + ' alumni profile(s) to CSV?', 'Export Alumni').then(function(confirmed) {
+                if (confirmed) {
+                    const form = document.getElementById('bulk-form');
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = 'export';
+                    form.appendChild(actionInput);
+                    form.submit();
+                }
+            });
+        }
+
+        // Handle bulk delete
+        function handleBulkDelete() {
+            const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
+            if (selected === 0) {
+                customAlert('Please select at least one alumni profile.', 'No Selection');
+                return;
+            }
+
+            customConfirm('Are you sure you want to delete ' + selected + ' alumni profile(s)? This action cannot be undone.', 'Delete Alumni').then(function(confirmed) {
+                if (confirmed) {
+                    const form = document.getElementById('bulk-form');
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = 'delete';
+                    form.appendChild(actionInput);
+                    form.submit();
+                }
             });
         }
     </script>
