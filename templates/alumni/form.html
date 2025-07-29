@@ -3,67 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Profile Form</title>
-    <!-- Tailwind CSS for modern styling -->
+    <title>Alumni Profile Form - Henry Djaba Memorial Foundation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Style for Django form fields rendered with as_p */
-        .django-form p {
-            margin-bottom: 1.5rem;
-        }
-        .django-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151; /* gray-700 */
-        }
-        .django-form input,
-        .django-form select,
-        .django-form textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #D1D5DB; /* gray-300 */
-            border-radius: 0.375rem; /* rounded-md */
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .django-form input:focus,
-        .django-form select:focus,
-        .django-form textarea:focus {
-            outline: none;
-            border-color: #4f46e5; /* indigo-600 */
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        .foundation-gradient {
+            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
         }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-
-    <div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-md">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">
-                {% if has_existing_profile %}
-                Edit Alumni Profile
-                {% else %}
-                Create Alumni Profile
-                {% endif %}
-            </h1>
-            <p class="text-gray-500">
-                {% if has_existing_profile %}
-                Update your information below. Your current details are displayed.
-                {% else %}
-                Please fill out your information to create your profile.
-                {% endif %}
-            </p>
-            {% if user %}
-            <div class="mt-2">
-                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                    Welcome, {{ user.first_name|default:user.username }}
-                </span>
-            </div>
-            {% endif %}
+<body class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-2xl bg-white rounded-lg shadow-2xl border border-purple-100 p-8">
+            <div class="text-center mb-8">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-org-secondary">Henry Djaba Memorial Foundation</h3>
+                    <div class="w-16 h-1 bg-gradient-to-r from-org-secondary to-org-primary mx-auto rounded mt-2"></div>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {% if has_existing_profile %}
+                    Edit Alumni Profile
+                    {% else %}
+                    Create Alumni Profile
+                    {% endif %}
+                </h1>
+                <p class="text-gray-500">
+                    {% if has_existing_profile %}
+                    Update your information below. Your current details are displayed.
+                    {% else %}
+                    Please fill out your information to create your profile with our foundation.
+                    {% endif %}
+                    </p>
+                    {% if user %}
+                    <div class="mt-2">
+                    <span
+                        class="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-100 to-blue-100 text-org-secondary rounded-full">
+                        Welcome, {{ user.first_name|default:user.username }}
+                    </span>
+                    </div>
+                    {% endif %}
             </div>
             
             <!-- Display messages -->
@@ -76,47 +55,36 @@
             {% endfor %}
             {% endif %}
 
-        <!-- 
-          This is your Django form. 
-          - The `method="POST"` is required to send data to the server.
-          - The `action=""` attribute means the form will submit to the same URL it was loaded from.
-        -->
         <form method="POST" action="" enctype="multipart/form-data">
-            <!-- 
-              **IMPORTANT DJANGO TAG**
-              This tag adds a hidden input with a CSRF token. 
-              It is required for security and to prevent cross-site request forgery.
-              Your form will not work without it.
-            -->
             {% csrf_token %}
 
             <!-- Profile Picture Section -->
             {% if has_existing_profile and profile %}
             <div class="mb-8 text-center">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
+                <h3 class="text-lg font-semibold text-org-secondary mb-4">Profile Picture</h3>
                 <div class="flex flex-col items-center space-y-4">
                     {% if profile.profile_picture %}
-                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
-                        class="w-32 h-32 rounded-full object-cover border-4 border-indigo-500">
-                    <div class="flex space-x-2">
-                        <label for="id_profile_picture"
-                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer text-sm">
-                            Update Picture
-                        </label>
-                        <a href="{% url 'delete_profile_picture' %}"
-                            onclick="return confirm('Are you sure you want to delete your profile picture?')"
-                            class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 text-sm">
-                            Delete Picture
-                        </a>
-                    </div>
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                            class="w-32 h-32 rounded-full object-cover border-4 border-org-secondary shadow-lg">
+                        <div class="flex space-x-2">
+                            <label for="id_profile_picture"
+                                class="bg-org-secondary text-white px-4 py-2 rounded-md hover:bg-org-secondary-dark cursor-pointer text-sm shadow transition-colors">
+                                Update Picture
+                            </label>
+                            <button type="button" onclick="handleDeletePicture()"
+                                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 text-sm shadow transition-colors">
+                                Delete Picture
+                            </button>
+                            </div>
                     {% else %}
-                    <div class="w-32 h-32 rounded-full bg-indigo-500 flex items-center justify-center border-4 border-indigo-500">
-                        <span class="text-white text-3xl font-bold">{{ profile.get_initials|default:"UN" }}</span>
-                    </div>
-                    <label for="id_profile_picture"
-                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 cursor-pointer text-sm">
-                        Upload Picture
-                    </label>
+                        <div
+                            class="w-32 h-32 rounded-full foundation-gradient flex items-center justify-center border-4 border-org-secondary shadow-lg">
+                            <span class="text-white text-3xl font-bold">{{ profile.get_initials|default:"UN" }}</span>
+                        </div>
+                        <label for="id_profile_picture"
+                            class="bg-org-secondary text-white px-4 py-2 rounded-md hover:bg-org-secondary-dark cursor-pointer text-sm shadow transition-colors">
+                            Upload Picture
+                        </label>
                     {% endif %}
                     <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" class="hidden">
                     <p class="text-sm text-gray-500">Upload a passport-style photograph (JPG, PNG)</p>
@@ -124,13 +92,6 @@
             </div>
             {% endif %}
 
-            <!-- 
-              **DJANGO FORM RENDERING**
-              This is where Django will automatically render all the fields
-              from the form instance you pass in your view.
-              
-              We'll render specific fields manually for better control.
-            -->
             <div class="django-form">
                 <!-- Profile Picture field (hidden, handled above) -->
                 {% if not has_existing_profile %}
@@ -143,26 +104,27 @@
                 
                 <!-- Other form fields -->
                 {% for field in form %}
-                {% if field.name != 'profile_picture' %}
-                <p>
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}
-                    <small class="text-gray-500">{{ field.help_text }}</small>
+                    {% if field.name != 'profile_picture' %}
+                    <p>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                        <small class="text-gray-500">{{ field.help_text }}</small>
+                        {% endif %}
+                    </p>
                     {% endif %}
-                </p>
-                {% endif %}
                 {% endfor %}
             </div>
 
-            <!-- Action Buttons -->
-            <div class="mt-8 flex space-x-4">
+            <!-- Form Actions -->
+            <div class="flex space-x-4 mt-8">
                 <!-- Back Button -->
                 <a href="javascript:history.back()" class="w-1/2 text-center bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors no-underline">
                     Back
                 </a>
                 <!-- Submit Button -->
-                <button type="submit" class="w-1/2 bg-indigo-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                <button type="submit"
+                    class="w-1/2 foundation-gradient text-white font-semibold py-3 px-4 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-org-secondary transition-all shadow-lg">
                     Save Profile
                 </button>
             </div>
@@ -170,20 +132,31 @@
     </div>
 
     <script>
+                // Handle profile picture delete
+                async function handleDeletePicture() {
+                    const confirmed = await customConfirm(
+                        'Are you sure you want to delete your profile picture?',
+                        'Delete Profile Picture'
+                    );
+
+                    if (confirmed) {
+                        window.location.href = "{% url 'delete_profile_picture' %}";
+                    }
+                }
+
         // Handle profile picture upload
-        document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('id_profile_picture');
 
-            // When file input changes, show preview and handle upload
             if (fileInput) {
-                fileInput.addEventListener('change', function (e) {
+                fileInput.addEventListener('change', async function (e) {
                     if (e.target.files && e.target.files[0]) {
                         const file = e.target.files[0];
 
                         // Validate file type
                         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                         if (!validTypes.includes(file.type)) {
-                            alert('Please select a valid image file (JPG, PNG, GIF)');
+                            await customError('Please select a valid image file (JPG, PNG, GIF)', 'Invalid File Type');
                             e.target.value = '';
                             return;
                         }
@@ -191,7 +164,7 @@
                         // Validate file size (max 5MB)
                         const maxSize = 5 * 1024 * 1024; // 5MB
                         if (file.size > maxSize) {
-                            alert('File size must be less than 5MB');
+                            await customError('File size must be less than 5MB', 'File Too Large');
                             e.target.value = '';
                             return;
                         }
@@ -204,22 +177,27 @@
                             if (existingImg) {
                                 existingImg.src = e.target.result;
                             } else {
-                                // If no existing image, replace the initials placeholder
-                                const placeholder = document.querySelector('.w-32.h-32.rounded-full.bg-indigo-500');
+                                const placeholder = document.querySelector('.w-32.h-32.rounded-full.foundation-gradient');
                                 if (placeholder) {
-                                    placeholder.outerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-indigo-500">`;
+                                    placeholder.outerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-org-secondary shadow-lg">`;
                                 }
                             }
                         };
                         reader.readAsDataURL(file);
 
-                        // Ask if user wants to upload immediately
-                        if (confirm('Upload this image? Click OK to save immediately, or Cancel to save with other changes.')) {
+                        const uploadNow = await customConfirm(
+                            'Upload this image? Click OK to save immediately, or Cancel to save with other changes.',
+                            'Upload Image'
+                        );
+
+                        if (uploadNow) {
                             document.querySelector('form').submit();
                         }
                         {% else %}
-                        // For new profiles, just show a confirmation
-                        alert('Image selected: ' + file.name + '. Click "Save Profile" to complete your profile with this image.');
+                        await customSuccess(
+                            `Image selected: ${file.name}. Click "Save Profile" to complete your profile with this image.`,
+                            'Image Selected'
+                        );
                         {% endif %}
                     }
                 });

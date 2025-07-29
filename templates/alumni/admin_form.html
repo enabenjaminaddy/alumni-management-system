@@ -1,53 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ title }} - Henry Djaba Memorial Foundation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .django-form p { margin-bottom: 1.5rem; }
-        .django-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .django-form input,
-        .django-form select,
-        .django-form textarea {
+
+        .form-section {
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #D1D5DB;
+            border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .django-form input:focus,
-        .django-form select:focus,
-        .django-form textarea:focus {
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+            border-color: var(--org-secondary);
+            box-shadow: 0 0 0 2px rgba(115, 31, 148, 0.2);
+        }
+
+        .foundation-gradient {
+            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
         }
     </style>
 </head>
-<body class="bg-gray-100">
 
+<body class="bg-gradient-to-br from-purple-50 to-blue-50">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <header class="foundation-gradient shadow-lg">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
+            <div class="flex h-20 items-center justify-between">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-indigo-600">{{ title }}</h1>
+                    <div class="text-white">
+                        <h1 class="text-xl font-bold">Henry Djaba Memorial Foundation</h1>
+                        <p class="text-sm text-purple-100">{{ title }}</p>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{% url 'alumni_list' %}" class="text-gray-500 hover:text-gray-900 rounded-md px-3 py-2 text-sm font-medium transition-colors">
+                    <a href="{% url 'alumni_list' %}"
+                        class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
                         ← Back to Alumni List
                     </a>
-                    <span class="text-sm text-gray-600">{{ user.first_name|default:user.username }}</span>
-                    <a href="{% url 'logout' %}" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors text-sm">
+                    <span class="text-sm text-purple-100">{{ user.first_name|default:user.username }}</span>
+                    <a href="{% url 'logout' %}"
+                        class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
                         Logout
                     </a>
                 </div>
@@ -56,176 +76,165 @@
     </header>
 
     <main class="mx-auto max-w-4xl py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="bg-white p-8 rounded-xl shadow-md">
-            <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
-                <p class="text-gray-500 mt-2">
-                    {% if alumni %}
-                        Update {{ alumni.first_name }}'s information below.
-                    {% else %}
-                        Fill out the form below to create a new alumni profile.
-                    {% endif %}
-                </p>
-                <div class="mt-2">
-                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                        Organization Admin
-                    </span>
-                </div>
+        <div class="bg-white shadow-2xl rounded-lg border border-purple-100">
+            <div class="px-6 py-4 border-b border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50">
+                <h2 class="text-lg font-medium text-org-secondary">Alumni Information</h2>
+                <p class="text-sm text-gray-600">Fill out the form below to {{ 'update' if alumni else 'create' }} the alumni
+                    profile for Henry Djaba Memorial Foundation.</p>
             </div>
 
             <form method="POST" action="" enctype="multipart/form-data">
                 {% csrf_token %}
                 
-                <!-- Personal Information Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Personal Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label for="id_profile_picture" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-                            {{ form.profile_picture }}
-                            <p class="text-sm text-gray-500 mt-1">Upload a passport-style photograph (optional)</p>
-                        </div>
-                        <div>
-                            <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                            {{ form.first_name }}
-                        </div>
-                        <div>
-                            <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                            {{ form.last_name }}
-                        </div>
-                        <div>
-                            <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                            {{ form.email }}
-                        </div>
-                        <div>
-                            <label for="id_phone_number" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            {{ form.phone_number }}
-                        </div>
-                        <div class="md:col-span-2">
-                            <label for="id_current_address" class="block text-sm font-medium text-gray-700 mb-2">Current Address</label>
-                            {{ form.current_address }}
-                        </div>
-                        <div class="md:col-span-2">
-                            <label for="id_social_media_accounts" class="block text-sm font-medium text-gray-700 mb-2">Social Media Accounts</label>
-                            {{ form.social_media_accounts }}
-                            <p class="text-sm text-gray-500 mt-1">List social media links or handles (one per line)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Education Information Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Education Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="id_graduation_year" class="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
-                            {{ form.graduation_year }}
-                        </div>
-                        <div>
-                            <label for="id_course_studied" class="block text-sm font-medium text-gray-700 mb-2">Course Studied</label>
-                            {{ form.course_studied }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Employment Information Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Employment Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="id_employment_status" class="block text-sm font-medium text-gray-700 mb-2">Employment Status</label>
-                            {{ form.employment_status }}
-                        </div>
-                        <div>
-                            <label for="id_company_name" class="block text-sm font-medium text-gray-700 mb-2">Company/Organization Name</label>
-                            {{ form.company_name }}
-                        </div>
-                        <div class="md:col-span-2">
-                            <label for="id_company_location" class="block text-sm font-medium text-gray-700 mb-2">Company Location</label>
-                            {{ form.company_location }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Skills and Experience Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Skills & Experience</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <label for="id_skills_acquired" class="block text-sm font-medium text-gray-700 mb-2">Skills Acquired</label>
-                            {{ form.skills_acquired }}
-                            <p class="text-sm text-gray-500 mt-1">List key skills gained from the training program</p>
-                        </div>
-                        <div>
-                            <label for="id_work_experience" class="block text-sm font-medium text-gray-700 mb-2">Work Experience</label>
-                            {{ form.work_experience }}
-                            <p class="text-sm text-gray-500 mt-1">Describe current or past work experience</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Financial Information Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Financial Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="id_monthly_savings" class="block text-sm font-medium text-gray-700 mb-2">Monthly Savings (USD)</label>
-                            {{ form.monthly_savings }}
-                        </div>
-                        <div>
-                            <label for="id_monthly_investment" class="block text-sm font-medium text-gray-700 mb-2">Monthly Investment (USD)</label>
-                            {{ form.monthly_investment }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Additional Information Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Additional Information</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <label for="id_testimonial" class="block text-sm font-medium text-gray-700 mb-2">Testimonial</label>
-                            {{ form.testimonial }}
-                            <p class="text-sm text-gray-500 mt-1">Share a quote or story about their experience with the training program</p>
-                        </div>
+                <div class="px-6 py-6 space-y-8">
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Personal Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="flex items-center">
-                                {{ form.mentorship_interest }}
-                                <label for="id_mentorship_interest" class="ml-2 text-sm font-medium text-gray-700">
-                                    Interested in mentoring current students
-                                </label>
+                            <div class="md:col-span-2">
+                                <label for="id_profile_picture" class="block text-sm font-medium text-org-secondary mb-2">Profile Picture</label>
+                                {{ form.profile_picture }}
+                                <p class="text-sm text-gray-500 mt-1">Upload a passport-style photograph (optional)</p>
+                                </div>
+                            <div class="form-field">
+                                <label for="id_first_name" class="block text-sm font-medium text-org-secondary mb-2">First Name *</label>
+                                {{ form.first_name }}
                             </div>
-                            <div class="flex items-center">
-                                {{ form.networking_interest }}
-                                <label for="id_networking_interest" class="ml-2 text-sm font-medium text-gray-700">
-                                    Interested in attending alumni events
-                                </label>
+                            <div class="form-field">
+                                <label for="id_last_name" class="block text-sm font-medium text-org-secondary mb-2">Last Name *</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_email" class="block text-sm font-medium text-org-secondary mb-2">Email *</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_phone_number" class="block text-sm font-medium text-org-secondary mb-2">Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="form-field md:col-span-2">
+                                <label for="id_current_address" class="block text-sm font-medium text-org-secondary mb-2">Current Address</label>
+                                {{ form.current_address }}
+                            </div>
+                            <div class="form-field md:col-span-2">
+                                <label for="id_social_media_accounts" class="block text-sm font-medium text-org-secondary mb-2">Social Media
+                                    Accounts</label>
+                                {{ form.social_media_accounts }}
+                                <p class="text-sm text-gray-500 mt-1">List social media links or handles</p>
+                                </div>
+                                </div>
+                                </div>
+
+                    <!-- Education Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Education</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-field">
+                                <label for="id_course_studied" class="block text-sm font-medium text-org-secondary mb-2">Course Studied</label>
+                                {{ form.course_studied }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_graduation_year" class="block text-sm font-medium text-org-secondary mb-2">Graduation Year</label>
+                                {{ form.graduation_year }}
+                            </div>
+                        </div>
+                        </div>
+
+                    <!-- Employment Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Employment</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-field">
+                                <label for="id_employment_status" class="block text-sm font-medium text-org-secondary mb-2">Employment
+                                    Status</label>
+                                {{ form.employment_status }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_company_name" class="block text-sm font-medium text-org-secondary mb-2">Company Name</label>
+                                {{ form.company_name }}
+                            </div>
+                            <div class="form-field md:col-span-2">
+                                <label for="id_company_location" class="block text-sm font-medium text-org-secondary mb-2">Company Location</label>
+                                {{ form.company_location }}
+                            </div>
+                            </div>
+                            </div>
+
+                    <!-- Skills & Experience Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Skills & Experience</h3>
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="form-field">
+                                <label for="id_skills_acquired" class="block text-sm font-medium text-org-secondary mb-2">Skills
+                                    Acquired</label>
+                                {{ form.skills_acquired }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_work_experience" class="block text-sm font-medium text-org-secondary mb-2">Work Experience</label>
+                                {{ form.work_experience }}
+                            </div>
+                            </div>
+                            </div>
+
+                    <!-- Financial Information Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Financial Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-field">
+                                <label for="id_monthly_savings" class="block text-sm font-medium text-org-secondary mb-2">Monthly Savings</label>
+                                {{ form.monthly_savings }}
+                            </div>
+                            <div class="form-field">
+                                <label for="id_monthly_investment" class="block text-sm font-medium text-org-secondary mb-2">Monthly
+                                    Investment</label>
+                                {{ form.monthly_investment }}
+                            </div>
+                            </div>
+                            </div>
+
+                    <!-- Additional Information Section -->
+                    <div class="form-section">
+                        <h3 class="text-lg font-semibold text-org-secondary mb-4 pb-2 border-b border-purple-200">Additional Information
+                        </h3>
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="form-field">
+                                <label for="id_testimonial" class="block text-sm font-medium text-org-secondary mb-2">Testimonial</label>
+                                {{ form.testimonial }}
+                                <p class="text-sm text-gray-500 mt-1">Share your experience with the Henry Djaba Memorial Foundation training program
+                                </p>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-field">
+                                    <label class="flex items-center">
+                                        {{ form.mentorship_interest }}
+                                        <span class="ml-2 text-sm text-gray-700">Interested in mentoring current students</span>
+                                        </label>
+                                        </div>
+                                <div class="form-field">
+                                    <label class="flex items-center">
+                                        {{ form.networking_interest }}
+                                        <span class="ml-2 text-sm text-gray-700">Interested in attending alumni events</span>
+                                        </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex space-x-4 pt-6 border-t border-gray-200">
-                    <a href="{% url 'alumni_list' %}" class="flex-1 text-center bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 transition-colors">
+                <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-blue-50 border-t border-purple-100 flex justify-between">
+                    <a href="{% url 'alumni_list' %}"
+                        class="flex-1 bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 text-center mr-3 transition-colors">
                         Cancel
                     </a>
-                    <button type="submit" class="flex-1 bg-indigo-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors">
-                        {{ submit_text }}
+                    <button type="submit"
+                        class="flex-1 foundation-gradient text-white font-semibold py-3 px-4 rounded-md hover:opacity-90 transition-all shadow-lg">
+                        {{ 'Update Alumni' if alumni else 'Create Alumni' }}
                     </button>
                 </div>
             </form>
         </div>
     </main>
-
 </body>
+
 </html> 

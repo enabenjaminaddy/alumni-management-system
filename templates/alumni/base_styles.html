@@ -1,0 +1,283 @@
+<!-- Base Styles and Modal System for Alumni Management -->
+<style>
+    :root {
+        --org-primary: #4EB4C3;
+        --org-primary-dark: #3a8a96;
+        --org-secondary: #731F94;
+        --org-secondary-dark: #5c1976;
+        --org-primary-light: #7bc5d1;
+        --org-secondary-light: #9c4fb8;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Custom color classes */
+    .bg-org-primary {
+        background-color: var(--org-primary) !important;
+    }
+
+    .bg-org-primary-dark {
+        background-color: var(--org-primary-dark) !important;
+    }
+
+    .bg-org-secondary {
+        background-color: var(--org-secondary) !important;
+    }
+
+    .bg-org-secondary-dark {
+        background-color: var(--org-secondary-dark) !important;
+    }
+
+    .bg-org-primary-light {
+        background-color: var(--org-primary-light) !important;
+    }
+
+    .bg-org-secondary-light {
+        background-color: var(--org-secondary-light) !important;
+    }
+
+    .text-org-primary {
+        color: var(--org-primary) !important;
+    }
+
+    .text-org-primary-dark {
+        color: var(--org-primary-dark) !important;
+    }
+
+    .text-org-secondary {
+        color: var(--org-secondary) !important;
+    }
+
+    .text-org-secondary-dark {
+        color: var(--org-secondary-dark) !important;
+    }
+
+    .text-org-primary-light {
+        color: var(--org-primary-light) !important;
+    }
+
+    .text-org-secondary-light {
+        color: var(--org-secondary-light) !important;
+    }
+
+    .border-org-primary {
+        border-color: var(--org-primary) !important;
+    }
+
+    .border-org-secondary {
+        border-color: var(--org-secondary) !important;
+    }
+
+    .ring-org-primary {
+        --tw-ring-color: var(--org-primary) !important;
+    }
+
+    .ring-org-secondary {
+        --tw-ring-color: var(--org-secondary) !important;
+    }
+
+    .hover\:bg-org-primary-dark:hover {
+        background-color: var(--org-primary-dark) !important;
+    }
+
+    .hover\:bg-org-secondary-dark:hover {
+        background-color: var(--org-secondary-dark) !important;
+    }
+
+    .hover\:text-org-primary-dark:hover {
+        color: var(--org-primary-dark) !important;
+    }
+
+    .hover\:text-org-secondary-dark:hover {
+        color: var(--org-secondary-dark) !important;
+    }
+
+    /* Focus states */
+    .focus\:ring-org-primary:focus {
+        --tw-ring-color: var(--org-primary) !important;
+    }
+
+    .focus\:ring-org-secondary:focus {
+        --tw-ring-color: var(--org-secondary) !important;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 400px;
+        width: 90%;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-icon.success {
+        background-color: #10b981;
+    }
+
+    .modal-icon.warning {
+        background-color: #f59e0b;
+    }
+
+    .modal-icon.error {
+        background-color: #ef4444;
+    }
+
+    .modal-icon.info {
+        background-color: var(--org-primary);
+    }
+</style>
+
+<!-- Modal Component -->
+<div id="customModal" class="modal-overlay">
+    <div class="modal-content text-center">
+        <div id="modalIcon" class="modal-icon">
+            <svg id="modalIconSvg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+        </div>
+        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-2"></h3>
+        <p id="modalMessage" class="text-gray-600 mb-6"></p>
+        <div id="modalButtons" class="flex space-x-3 justify-center"></div>
+    </div>
+</div>
+
+<script>
+    // Custom Modal System
+    class CustomModal {
+        constructor() {
+            this.modal = document.getElementById('customModal');
+            this.icon = document.getElementById('modalIcon');
+            this.iconSvg = document.getElementById('modalIconSvg');
+            this.title = document.getElementById('modalTitle');
+            this.message = document.getElementById('modalMessage');
+            this.buttons = document.getElementById('modalButtons');
+        }
+
+        show(type, title, message, buttons = []) {
+            this.setIcon(type);
+            this.title.textContent = title;
+            this.message.textContent = message;
+            this.setButtons(buttons);
+            this.modal.classList.add('active');
+
+            return new Promise((resolve) => {
+                this.resolve = resolve;
+            });
+        }
+
+        hide() {
+            this.modal.classList.remove('active');
+            if (this.resolve) {
+                this.resolve(false);
+            }
+        }
+
+        setIcon(type) {
+            this.icon.className = `modal-icon ${type}`;
+            const paths = {
+                success: 'M5 13l4 4L19 7',
+                error: 'M6 18L18 6M6 6l12 12',
+                warning: 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+            };
+            this.iconSvg.querySelector('path').setAttribute('d', paths[type]);
+        }
+
+        setButtons(buttons) {
+            this.buttons.innerHTML = '';
+            buttons.forEach(button => {
+                const btn = document.createElement('button');
+                btn.textContent = button.text;
+                btn.className = button.primary
+                    ? 'px-4 py-2 bg-org-primary text-white rounded-lg hover:bg-org-primary-dark transition-colors'
+                    : 'px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors';
+                btn.onclick = () => {
+                    this.modal.classList.remove('active');
+                    if (this.resolve) {
+                        this.resolve(button.value);
+                    }
+                };
+                this.buttons.appendChild(btn);
+            });
+        }
+    }
+
+    // Initialize modal system if not already initialized
+    if (!window.modalInitialized) {
+        const modal = new CustomModal();
+        window.modalInitialized = true;
+
+        // Global functions to replace alert and confirm
+        window.customAlert = function (message, title = 'Notice') {
+            return modal.show('info', title, message, [
+                { text: 'OK', primary: true, value: true }
+            ]);
+        };
+
+        window.customConfirm = function (message, title = 'Confirm') {
+            return modal.show('warning', title, message, [
+                { text: 'Cancel', primary: false, value: false },
+                { text: 'Confirm', primary: true, value: true }
+            ]);
+        };
+
+        window.customSuccess = function (message, title = 'Success') {
+            return modal.show('success', title, message, [
+                { text: 'OK', primary: true, value: true }
+            ]);
+        };
+
+        window.customError = function (message, title = 'Error') {
+            return modal.show('error', title, message, [
+                { text: 'OK', primary: true, value: true }
+            ]);
+        };
+
+        // Close modal on overlay click
+        document.getElementById('customModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                modal.hide();
+            }
+        });
+    }
+</script>

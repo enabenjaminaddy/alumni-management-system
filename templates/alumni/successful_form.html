@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submission Successful</title>
+    <title>Submission Successful - Henry Djaba Memorial Foundation</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
+        .foundation-gradient {
+            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
+        }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-md text-center">
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl border border-purple-100 text-center">
+        <!-- Foundation Header -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-org-secondary">Henry Djaba Memorial Foundation</h3>
+            <div class="w-16 h-1 bg-gradient-to-r from-org-secondary to-org-primary mx-auto rounded mt-2"></div>
+        </div>
+
         <!-- Success Icon -->
         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-6">
             <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -27,15 +37,16 @@
         <h1 class="text-2xl font-bold text-gray-900">Profile Updated Successfully!</h1>
         <p class="text-gray-500 mt-2">
             {% if user %}
-            {{ user.first_name|default:user.username }}, your alumni profile has been successfully saved.
+            {{ user.first_name|default:user.username }}, your Henry Djaba Memorial Foundation alumni profile has been successfully
+            saved.
             {% else %}
-            Thank you. Your information has been saved.
+            Thank you. Your information has been saved to our alumni directory.
             {% endif %}
         </p>
         
         {% if profile %}
-        <div class="mt-6 p-4 bg-gray-50 rounded-md text-left">
-            <h3 class="font-semibold text-gray-800 mb-2">Profile Summary:</h3>
+        <div class="mt-6 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-md text-left border border-purple-100">
+            <h3 class="font-semibold text-org-secondary mb-2">Profile Summary:</h3>
             <div class="text-sm text-gray-600 space-y-1">
                 <p><strong>Name:</strong> {{ profile.first_name }} {{ profile.last_name }}</p>
                 <p><strong>Course:</strong> {{ profile.course_studied|default:"Not specified" }}</p>
@@ -51,7 +62,8 @@
                 class="w-full inline-block bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 transition-colors no-underline">
                 Edit Again
             </a>
-            <a href="{% url 'home' %}" class="w-full inline-block bg-indigo-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors no-underline">
+            <a href="{% url 'home' %}"
+                class="w-full inline-block foundation-gradient text-white font-semibold py-3 px-4 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-org-secondary transition-all no-underline shadow-lg">
                 Back to Dashboard
             </a>
         </div>

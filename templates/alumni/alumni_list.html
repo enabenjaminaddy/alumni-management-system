@@ -4,14 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Management</title>
+    <title>Alumni Management - Henry Djaba Memorial Foundation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
         .checkbox-column {
             width: 50px;
         }
@@ -19,26 +16,33 @@
         .actions-column {
             width: 120px;
         }
+
+        .foundation-gradient {
+            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
+        }
     </style>
 </head>
 
 <body class="bg-gray-100">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <header class="foundation-gradient shadow-lg">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
+            <div class="flex h-20 items-center justify-between">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-indigo-600">Alumni Management</h1>
+                    <div class="text-white">
+                        <h1 class="text-xl font-bold">Henry Djaba Memorial Foundation</h1>
+                        <p class="text-sm text-purple-100">Alumni Management System</p>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{% url 'org_admin_dashboard' %}"
-                        class="text-gray-500 hover:text-gray-900 rounded-md px-3 py-2 text-sm font-medium transition-colors">
+                        class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
                         ← Back to Dashboard
                     </a>
-                    <span class="text-sm text-gray-600">{{ user.first_name|default:user.username }}</span>
+                    <span class="text-sm text-purple-100">{{ user.first_name|default:user.username }}</span>
                     <a href="{% url 'logout' %}"
-                        class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors text-sm">
+                        class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
                         Logout
                     </a>
                 </div>
@@ -61,10 +65,10 @@
         <div class="mb-8 flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">Alumni Directory</h2>
-                <p class="text-gray-600">Manage and search alumni profiles</p>
+                <p class="text-gray-600">Manage and search alumni profiles for Henry Djaba Memorial Foundation</p>
             </div>
             <a href="{% url 'add_alumni' %}"
-                class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
+                class="bg-org-secondary text-white font-semibold py-2 px-4 rounded-md hover:bg-org-secondary-dark transition-colors shadow-lg">
                 + Add New Alumni
             </a>
         </div>
@@ -76,50 +80,48 @@
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                     <input type="text" id="search" name="search" value="{{ search_query }}"
                         placeholder="Name, email, company..."
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                 </div>
-        
+
                 <div>
                     <label for="employment" class="block text-sm font-medium text-gray-700 mb-1">Employment</label>
                     <select id="employment" name="employment"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All</option>
-                        <option value="employed" {% if employment_filter and employment_filter == employed %} selected{% endif%}>Employed
+                        <option value="employed" {% if employment_filter and employment_filter==employed %} selected{% endif %}>Employed
                         </option>
-                        <option value="self_employed" {% if employment_filter and employment_filter == self_employed %}selected{% endif %}>
+                        <option value="self_employed" {% if employment_filter and employment_filter==self_employed %} selected{% endif %}>
                             Self-Employed</option>
-                        <option value="seeking" {% if employment_filter and employment_filter == seeking %} selected{% endif %}>
-                            Seeking
+                        <option value="seeking" {% if employment_filter and employment_filter==seeking %} selected{% endif %}>Seeking
                             Employment</option>
                     </select>
                 </div>
-        
+
                 <div>
                     <label for="course" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
                     <select id="course" name="course"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All Courses</option>
                         {% for course in course_choices %}
-                        <option value="{{ course }}" {% if course_filter and course_filter == course %} selected{% endif %}>{{course }}</option>
+                        <option value="{{ course }}" {% if course_filter and course_filter==course %} selected{% endif %}>{{ course }}</option>
                         {% endfor %}
                     </select>
                 </div>
-        
+
                 <div>
                     <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
                     <select id="year" name="year"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All Years</option>
                         {% for year in year_choices %}
-                        <option value="{{ year }}" {% if year_filter and year_filter == year %} selected{% endif %}>{{ year }}
-                        </option>
+                        <option value="{{ year }}" {% if year_filter and year_filter==year %} selected{% endif %}>{{ year }}</option>
                         {% endfor %}
                     </select>
                 </div>
-        
+
                 <div class="flex items-end space-x-2">
                     <button type="submit"
-                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">
+                        class="bg-org-primary text-white px-4 py-2 rounded-md hover:bg-org-primary-dark transition-colors">
                         Search
                     </button>
                     <a href="{% url 'alumni_list' %}"
@@ -135,24 +137,22 @@
             {% csrf_token %}
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <!-- Bulk Actions Bar -->
-                <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                <div class="px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b flex justify-between items-center">
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center">
                             <input type="checkbox" id="select-all"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                class="rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
                             <span class="ml-2 text-sm text-gray-700">Select All</span>
                         </label>
                         <span id="selected-count" class="text-sm text-gray-500">0 selected</span>
                     </div>
                     <div class="flex space-x-2">
-                        <button type="submit" name="action" value="export"
-                            class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
-                            onclick="return confirmBulkAction('export')">
+                        <button type="button" onclick="handleBulkExport()"
+                            class="bg-org-secondary text-white px-3 py-1 rounded text-sm hover:bg-org-secondary-dark transition-colors shadow">
                             Export Selected
                         </button>
-                        <button type="submit" name="action" value="delete"
-                            class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
-                            onclick="return confirmBulkAction('delete')">
+                        <button type="button" onclick="handleBulkDelete()"
+                            class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors shadow">
                             Delete Selected
                         </button>
                     </div>
@@ -161,37 +161,30 @@
                 <!-- Alumni Table -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                        <thead class="bg-gradient-to-r from-purple-100 to-blue-100">
                             <tr>
-                                <th
-                                    class="checkbox-column px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="checkbox-column px-4 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Select</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Contact</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Education</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Employment</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Interests</th>
-                                <th
-                                    class="actions-column px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="actions-column px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
                                     Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             {% for alumni in page_obj %}
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-purple-50 transition-colors">
                                 <td class="checkbox-column px-4 py-4">
                                     <input type="checkbox" name="selected_alumni" value="{{ alumni.id }}"
-                                        class="alumni-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        class="alumni-checkbox rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -199,7 +192,8 @@
                                             {% if alumni.profile_picture %}
                                             <img class="h-10 w-10 rounded-full object-cover" src="{{ alumni.profile_picture.url }}" alt="Profile">
                                             {% else %}
-                                            <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                            <div
+                                                class="h-10 w-10 rounded-full bg-gradient-to-br from-org-secondary to-org-primary flex items-center justify-center">
                                                 <span class="text-white text-sm font-medium">{{ alumni.get_initials }}</span>
                                             </div>
                                             {% endif %}
@@ -221,7 +215,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
                                         {% if alumni.employment_status == 'employed' %}bg-green-100 text-green-800
-                                        {% elif alumni.employment_status == 'self_employed' %}bg-blue-100 text-blue-800
+                                        {% elif alumni.employment_status == 'self_employed' %}bg-purple-100 text-purple-800
                                         {% elif alumni.employment_status == 'seeking' %}bg-yellow-100 text-yellow-800
                                         {% else %}bg-gray-100 text-gray-800{% endif %}">
                                         {{ alumni.get_employment_status_display|default:"Not specified" }}
@@ -231,19 +225,17 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div class="flex space-x-2">
                                         {% if alumni.mentorship_interest %}
-                                        <span
-                                            class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">Mentor</span>
+                                        <span class="bg-org-secondary text-white px-2 py-1 rounded-full text-xs">Mentor</span>
                                         {% endif %}
                                         {% if alumni.networking_interest %}
-                                        <span
-                                            class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">Network</span>
+                                        <span class="bg-org-primary text-white px-2 py-1 rounded-full text-xs">Network</span>
                                         {% endif %}
                                     </div>
                                 </td>
                                 <td class="actions-column px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         <a href="{% url 'edit_alumni' alumni.id %}"
-                                            class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                            class="text-org-secondary hover:text-org-secondary-dark">Edit</a>
                                         <a href="{% url 'delete_alumni' alumni.id %}"
                                             class="text-red-600 hover:text-red-900">Delete</a>
                                     </div>
@@ -253,7 +245,7 @@
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
-                                        <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                        <svg class="w-12 h-12 text-purple-400 mb-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
@@ -263,10 +255,10 @@
                                         <p class="text-gray-500">
                                             {% if search_query or employment_filter or course_filter or year_filter %}
                                             Try adjusting your search filters or <a href="{% url 'alumni_list' %}"
-                                                class="text-indigo-600 hover:text-indigo-500">clear all filters</a>
+                                                class="text-org-secondary hover:text-org-secondary-dark">clear all filters</a>
                                             {% else %}
                                             <a href="{% url 'add_alumni' %}"
-                                                class="text-indigo-600 hover:text-indigo-500">Add the first alumni
+                                                class="text-org-secondary hover:text-org-secondary-dark">Add the first alumni
                                                 profile</a>
                                             {% endif %}
                                         </p>
@@ -292,8 +284,7 @@
                                 class="px-3 py-2 text-sm bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Previous</a>
                             {% endif %}
 
-                            <span class="px-3 py-2 text-sm bg-indigo-600 text-white rounded">{{ page_obj.number
-                                }}</span>
+                            <span class="px-3 py-2 text-sm bg-org-secondary text-white rounded">{{ page_obj.number }}</span>
 
                             {% if page_obj.has_next %}
                             <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if employment_filter %}employment={{ employment_filter }}&{% endif %}{% if course_filter %}course={{ course_filter }}&{% endif %}{% if year_filter %}year={{ year_filter }}&{% endif %}page={{ page_obj.next_page_number }}"
@@ -320,7 +311,7 @@
         // Update selected count
         function updateSelectedCount() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
-            document.getElementById('selected-count').textContent = `${selected} selected`;
+            do etElementById('selected-count').te                    selected + ' selected';
         }
 
         // Add event listeners to individual checkboxes
@@ -328,20 +319,40 @@
             checkbox.addEventListener('change', updateSelectedCount);
         });
 
-        // Confirmation for bulk actions
-        function confirmBulkAction(action) {
-            const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
-            if (selected === 0) {
-                alert('Please select at least one alumni profile.');
-                return false;
+            // Handle bulk export
+            function handleBulkExpo                        const selected = document.querySelectorAll('.alumni            x:check            gth;
+            if (s === 0) {
+                custo                se select at least one alumni profile.', 'No Selection');
+                retur
             }
 
-            if (action === 'delete') {
-                return confirm(`Are you sure you want to delete ${selected} alumni profile(s)? This action cannot be undone.`);
-            } else if (action === 'export') {
-                return confirm(`Export ${selected} alumni profile(s) to CSV?`);
+            cu                    ort ' + selected + ' alumni profile(s) to CSV ? ', 'Export Alumni').then(funct                    
+                (conf                                  const form = document.getElementById('bulk-form');
+            const a ctionInput = do ment('input');
+                          tionInput.type = 'hidden';
+                    acti                        on';
+            actionInput.value = 'export'                           form.appendChild(actionInpu                             form.submit();
+                                   });
+        }
+
+            //                                 function handleBulkDelete() {
+            const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
+            if (selected === 0) {
+                custo                        se select at least one alumni profile.', 'No Selection');
+                return;
             }
-            return true;
+
+                customConfirm('Are you sure you want to delete ' + selected + ' alumni profile(s)? This action cannot be undone.', 'Delete Alumni').then(function (confirmed) {
+                    if (confirmed) {
+                        const form = document.getElementById('bulk-form');
+                        const a ctionInput = document.createElement('input');
+                        actionInput.type = 'hidden';
+                        actionInput.name = 'action';
+                        actionInput.value = 'delete';
+                        form.appendChild(actionInput);
+                        form.submit();
+                    }
+            });
         }
     </script>
 

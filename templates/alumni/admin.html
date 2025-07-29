@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - Henry Djaba Memorial Foundation</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -47,25 +48,30 @@
             height: 100%;
             border: none; 
         }
+        .foundation-gradient {
+            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-purple-50 to-blue-50">
 
     <div class="app-container">
         <!-- Header Section -->
-        <header class="app-header bg-white shadow-sm z-10">
+        <header class="app-header foundation-gradient shadow-lg z-10">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
+                <div class="flex h-20 items-center justify-between">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <h1 class="text-xl font-bold text-indigo-600">Alumni Admin</h1>
+                        <div class="text-white">
+                            <h1 class="text-xl font-bold">Henry Djaba Memorial Foundation</h1>
+                            <p class="text-sm text-purple-100">Alumni Admin</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="/" class="text-gray-500 hover:text-gray-900 rounded-md px-3 py-2 text-sm font-medium transition-colors">
-                           &larr; Back to Home
+                        <a href="/" class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
+                            ← Back to Home
                         </a>
-                        <a href="/logout/" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors no-underline text-sm">
+                        <a href="/logout/"
+                            class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
                             Logout
                         </a>
                     </div>
