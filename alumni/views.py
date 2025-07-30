@@ -14,7 +14,18 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 import csv
 from django.utils import timezone
-import os
+from django.contrib.auth.models import Group, User
+from django.db.models import Q, Exists, OuterRef
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth import login
+from django.utils.crypto import get_random_string
+
+
 
 # Create your views here.
 @login_required
@@ -125,18 +136,57 @@ def org_admin_dashboard(request):
     }
     return render(request, 'alumni/org_admin_dashboard.html', context)
 
+def set_alumni_password(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                user.is_active = True # Activate the account!
+                user.save()
+                try:
+                    # Assumes your group is named 'Alumni'. Change if needed.
+                    alumni_group = Group.objects.get(name='Alumni') 
+                    user.groups.add(alumni_group)
+                except Group.DoesNotExist:
+                    # Handle case where the group doesn't exist
+                    # You might want to log this error
+                    messages.error(request, 'Configuration error: Alumni group not found.')
+                login(request, user) # Log the user in
+                messages.success(request, 'Your password has been set and you are now logged in!')
+                return redirect('home') # Redirect to their dashboard
+        else:
+            form = SetPasswordForm(user)
+        
+        return render(request, 'alumni/set_password_form.html', {'form': form})
+    else:
+        messages.error(request, 'The activation link is invalid or has expired.')
+        return redirect('login')
+
 
 @login_required
 @user_passes_test(is_organization_admin, login_url='login')
 def alumni_list(request):
-    """Alumni list with search and filtering"""
+    """Alumni list with search, filtering, and user account status."""
     search_query = request.GET.get('search', '')
     employment_filter = request.GET.get('employment', '')
     course_filter = request.GET.get('course', '')
     year_filter = request.GET.get('year', '')
     
-    # Start with all alumni
-    alumni = AlumniProfile.objects.all().order_by('-created_at')
+    # --- KEY CHANGE: Annotate with user existence ---
+    # We create a subquery that checks if a User exists with the same email.
+    user_exists_subquery = User.objects.filter(email=OuterRef('email'))
+    
+    # Start with all alumni and add the annotation
+    alumni = AlumniProfile.objects.annotate(
+        has_user_account=Exists(user_exists_subquery)
+    ).order_by('-created_at')
     
     # Apply search filter
     if search_query:
@@ -147,25 +197,20 @@ def alumni_list(request):
             Q(company_name__icontains=search_query)
         )
     
-    # Apply employment filter
+    # Apply other filters...
     if employment_filter:
         alumni = alumni.filter(employment_status=employment_filter)
-    
-    # Apply course filter
     if course_filter:
         alumni = alumni.filter(course_studied__icontains=course_filter)
-    
-    # Apply year filter
     if year_filter:
         alumni = alumni.filter(graduation_year=year_filter)
     
     # Pagination
-    paginator = Paginator(alumni, 20)  # Show 20 alumni per page
+    paginator = Paginator(alumni, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     # Get unique values for filters
-    employment_choices = AlumniProfile.objects.values_list('employment_status', flat=True).distinct()
     course_choices = AlumniProfile.objects.values_list('course_studied', flat=True).distinct().exclude(course_studied__isnull=True)
     year_choices = AlumniProfile.objects.values_list('graduation_year', flat=True).distinct().exclude(graduation_year__isnull=True)
     
@@ -175,13 +220,60 @@ def alumni_list(request):
         'employment_filter': employment_filter,
         'course_filter': course_filter,
         'year_filter': year_filter,
-        'employment_choices': employment_choices,
         'course_choices': course_choices,
         'year_choices': sorted(year_choices, reverse=True) if year_choices else [],
-        'user_role': get_user_role(request.user),
         'user': request.user,
     }
     return render(request, 'alumni/alumni_list.html', context)
+
+def send_invite(request, alumni_id):
+    if request.method == 'POST':
+        try:
+            alumni = get_object_or_404(AlumniProfile, id=alumni_id)
+
+            # 1. Check if a user account already exists
+            if User.objects.filter(email=alumni.email).exists():
+                messages.error(request, f"An account for {alumni.email} already exists.")
+                return redirect('alumni_list')
+
+            # 2. Create a temporary, inactive user account
+            # We use a long, random password that no one will ever use.
+            temp_password = get_random_string(length=12)
+            user = User.objects.create_user(
+                username=alumni.email, # Use email as username for simplicity
+                email=alumni.email,
+                password=temp_password,
+                first_name=alumni.first_name,
+                last_name=alumni.last_name,
+                is_active=False # The account is inactive until they set a password
+            )
+            alumni.user = user
+            alumni.save()
+
+            # 3. Generate a unique, one-time-use token and activation link
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            activation_link = request.build_absolute_uri(
+                f'/alumni/set-password/{uid}/{token}/' # This URL needs to exist
+            )
+
+            # 4. Send the email
+            email_subject = 'You are invited to the Alumni Portal!'
+            email_body = render_to_string('alumni/invite_email.html', {
+                'alumni': alumni,
+                'activation_link': activation_link,
+            })
+            send_mail(email_subject, email_body, 'no-reply@yourfoundation.org', [alumni.email])
+
+            messages.success(request, f"Successfully sent an invitation to {alumni.first_name}.")
+
+            print(f"Sending invite to {alumni.email}...")
+            # --------------------------------------------------
+            # messages.success(request, f"Successfully sent an invitation to {alumni.first_name} {alumni.last_name}.")
+        except AlumniProfile.DoesNotExist:
+            messages.error(request, "Alumni profile not found.")
+    
+    return redirect('alumni_list')
 
 
 @login_required
@@ -236,6 +328,40 @@ def edit_alumni(request, alumni_id):
     }
     return render(request, 'alumni/admin_form.html', context)
 
+@login_required
+def alumni_profile_edit(request):
+    """
+    Allows a logged-in alumnus to edit their own profile.
+    """
+    try:
+        # This is the key: it gets the profile linked to the current user.
+        # This requires the OneToOneField link from the previous explanation.
+        profile = request.user.alumni_profile 
+    except AlumniProfile.DoesNotExist:
+        messages.error(request, "Your alumni profile could not be found. Please contact an administrator.")
+        return redirect('home') # Or some other appropriate page
+
+    if request.method == 'POST':
+        # We pass 'instance=profile' to tell the form to UPDATE this specific profile, not create a new one.
+        form = AlumniProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('home') # Redirect to their dashboard after saving
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        # When the page is first loaded, pre-populate the form with the user's existing data.
+        form = AlumniProfileForm(instance=profile)
+
+    context = {
+        'form': form,
+        'title': 'Edit Your Profile',
+        'submit_text': 'Save Changes',
+        'user': request.user,
+    }
+    # This can reuse your existing admin form template
+    return render(request, 'alumni/admin_form.html', context)
 
 @login_required
 @user_passes_test(is_organization_admin, login_url='login')
@@ -256,11 +382,54 @@ def delete_alumni(request, alumni_id):
     }
     return render(request, 'alumni/confirm_delete.html', context)
 
+def _send_alumni_invitation(request, alumni):
+    """
+    Helper function to create a user and send an invitation email.
+    This is not a view and is meant to be called by other views.
+    It returns a tuple: (success_boolean, message_string)
+    """
+    # 1. Check if a user account already exists for this profile
+    if alumni.user or User.objects.filter(email=alumni.email).exists():
+        return (False, f"An account for {alumni.email} already exists.")
+
+    # 2. Create a temporary, inactive user account
+    temp_password = get_random_string(length=12)
+    user = User.objects.create_user(
+        username=alumni.email,
+        email=alumni.email,
+        password=temp_password,
+        first_name=alumni.first_name,
+        last_name=alumni.last_name,
+        is_active=False  # The account is inactive until they set a password
+    )
+    
+    # 3. Link the new user to the alumni profile
+    alumni.user = user
+    alumni.save()
+
+    # 4. Generate a unique, one-time-use token and activation link
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    activation_link = request.build_absolute_uri(
+        f'/alumni/set-password/{uid}/{token}/'
+    )
+
+    # 5. Send the email using a template
+    email_subject = 'You are invited to the Alumni Portal!'
+    email_body = render_to_string('alumni/invite_email.html', {
+        'alumni': alumni,
+        'activation_link': activation_link,
+    })
+    send_mail(email_subject, email_body, 'no-reply@yourfoundation.org', [alumni.email])
+    
+    # 6. Return a success status and message
+    return (True, f"Successfully sent an invitation to {alumni.first_name} {alumni.last_name}.") 
+
 
 @login_required
 @user_passes_test(is_organization_admin, login_url='login')
 def bulk_operations(request):
-    """Handle bulk operations on alumni profiles"""
+    """Handle all bulk operations on alumni profiles (invite, export, delete)"""
     if request.method == 'POST':
         action = request.POST.get('action')
         selected_ids = request.POST.getlist('selected_alumni')
@@ -271,18 +440,37 @@ def bulk_operations(request):
         
         selected_alumni = AlumniProfile.objects.filter(id__in=selected_ids)
         
-        if action == 'delete':
+        # --- MERGED LOGIC ---
+        if action == 'invite':
+            invited_count = 0
+            already_exists_count = 0
+            for alumni in selected_alumni:
+                success, message = _send_alumni_invitation(request, alumni)
+                if success:
+                    invited_count += 1
+                else:
+                    already_exists_count += 1
+            
+            if invited_count > 0:
+                messages.success(request, f'Successfully sent {invited_count} invitations.')
+            if already_exists_count > 0:
+                messages.warning(request, f'{already_exists_count} alumni already had an account and were not invited again.')
+
+        elif action == 'delete':
             count = selected_alumni.count()
             selected_alumni.delete()
             messages.success(request, f'{count} alumni profiles deleted successfully.')
         
         elif action == 'export':
+            # This calls your existing export function
             return export_alumni_csv(selected_alumni)
         
         else:
             messages.error(request, 'Invalid action selected.')
     
     return redirect('alumni_list')
+
+
 
 
 @login_required

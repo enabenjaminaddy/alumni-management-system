@@ -9,17 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% include 'alumni/base_styles.html' %}
     <style>
-        .checkbox-column {
-            width: 50px;
-        }
-
-        .actions-column {
-            width: 120px;
-        }
-
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
+        .checkbox-column { width: 50px; }
+        .actions-column { width: 120px; }
+        .foundation-gradient { background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%); }
     </style>
 </head>
 
@@ -36,13 +28,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{% url 'org_admin_dashboard' %}"
-                        class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
+                    <a href="{% url 'org_admin_dashboard' %}" class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
                         ← Back to Dashboard
                     </a>
                     <span class="text-sm text-purple-100">{{ user.first_name|default:user.username }}</span>
-                    <a href="{% url 'logout' %}"
-                        class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
+                    <a href="{% url 'logout' %}" class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
                         Logout
                     </a>
                 </div>
@@ -54,8 +44,7 @@
         <!-- Messages -->
         {% if messages %}
         {% for message in messages %}
-        <div
-            class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+        <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
@@ -65,10 +54,9 @@
         <div class="mb-8 flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">Alumni Directory</h2>
-                <p class="text-gray-600">Manage and search alumni profiles for Henry Djaba Memorial Foundation</p>
+                <p class="text-gray-600">Manage and search alumni profiles.</p>
             </div>
-            <a href="{% url 'add_alumni' %}"
-                class="bg-org-secondary text-white font-semibold py-2 px-4 rounded-md hover:bg-org-secondary-dark transition-colors shadow-lg">
+            <a href="{% url 'add_alumni' %}" class="bg-org-secondary text-white font-semibold py-2 px-4 rounded-md hover:bg-org-secondary-dark transition-colors shadow-lg">
                 + Add New Alumni
             </a>
         </div>
@@ -88,11 +76,11 @@
                     <select id="employment" name="employment"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All</option>
-                        <option value="employed" {% if employment_filter and employment_filter == employed %} selected{% endif %}>Employed
+                        <option value="employed" {% if employment_filter and employment_filter == 'employed' %} selected{% endif %}>Employed
                         </option>
-                        <option value="self_employed" {% if employment_filter and employment_filter == self_employed %} selected{% endif %}>
+                        <option value="self_employed" {% if employment_filter and employment_filter == 'self_employed' %} selected{% endif %}>
                             Self-Employed</option>
-                        <option value="seeking" {% if employment_filter and employment_filter == seeking %} selected{% endif %}>Seeking
+                        <option value="seeking" {% if employment_filter and employment_filter == 'seeking' %} selected{% endif %}>Seeking
                             Employment</option>
                     </select>
                 </div>
@@ -114,7 +102,7 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-org-primary">
                         <option value="">All Years</option>
                         {% for year in year_choices %}
-                        <option value="{{ year }}" {% if year_filter and year_filter == year %} selected{% endif %}>{{ year }}</option>
+                        <option value="{{ year }}" {% if year_filter and year_filter == year|stringformat:"s" %} selected{% endif %}>{{ year }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -132,7 +120,7 @@
             </form>
         </div>
 
-        <!-- Bulk Operations -->
+        <!-- Bulk Operations Form -->
         <form method="POST" action="{% url 'bulk_operations' %}" id="bulk-form">
             {% csrf_token %}
             <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -140,19 +128,19 @@
                 <div class="px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b flex justify-between items-center">
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center">
-                            <input type="checkbox" id="select-all"
-                                class="rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
+                            <input type="checkbox" id="select-all" class="rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
                             <span class="ml-2 text-sm text-gray-700">Select All</span>
                         </label>
                         <span id="selected-count" class="text-sm text-gray-500">0 selected</span>
                     </div>
                     <div class="flex space-x-2">
-                        <button type="button" onclick="handleBulkExport()"
-                            class="bg-org-secondary text-white px-3 py-1 rounded text-sm hover:bg-org-secondary-dark transition-colors shadow">
+                        <button type="button" onclick="handleBulkInvite()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors shadow">
+                            Send Invites
+                        </button>
+                        <button type="button" onclick="handleBulkExport()" class="bg-org-secondary text-white px-3 py-1 rounded text-sm hover:bg-org-secondary-dark transition-colors shadow">
                             Export Selected
                         </button>
-                        <button type="button" onclick="handleBulkDelete()"
-                            class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors shadow">
+                        <button type="button" onclick="handleBulkDelete()" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors shadow">
                             Delete Selected
                         </button>
                     </div>
@@ -163,28 +151,21 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gradient-to-r from-purple-100 to-blue-100">
                             <tr>
-                                <th class="checkbox-column px-4 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Select</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Contact</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Education</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Employment</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Interests</th>
-                                <th class="actions-column px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">
-                                    Actions</th>
+                                <th class="checkbox-column px-4 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Select</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Contact</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Education</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Employment</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Interests</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Invitation</th>
+                                <th class="actions-column px-6 py-3 text-left text-xs font-medium text-org-secondary uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             {% for alumni in page_obj %}
                             <tr class="hover:bg-purple-50 transition-colors">
                                 <td class="checkbox-column px-4 py-4">
-                                    <input type="checkbox" name="selected_alumni" value="{{ alumni.id }}"
-                                        class="alumni-checkbox rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
+                                    <input type="checkbox" name="selected_alumni" value="{{ alumni.id }}" class="alumni-checkbox rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -231,18 +212,27 @@
                                         {% endif %}
                                     </div>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    {% if alumni.has_user_account %}
+                                        <button disabled class="bg-gray-200 text-gray-500 px-3 py-1 rounded text-sm cursor-not-allowed">Account Exists</button>
+                                    {% else %}
+                                        <button type="button" 
+                                                onclick="sendSingleInvite('{% url 'send_invite' alumni.id %}', '{{ alumni.first_name }} {{ alumni.last_name }}')"
+                                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors shadow">
+                                            Send Invite
+                                        </button>
+                                    {% endif %}
+                                </td>
                                 <td class="actions-column px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{% url 'edit_alumni' alumni.id %}"
-                                            class="text-org-secondary hover:text-org-secondary-dark">Edit</a>
-                                        <a href="{% url 'delete_alumni' alumni.id %}"
-                                            class="text-red-600 hover:text-red-900">Delete</a>
+                                        <a href="{% url 'edit_alumni' alumni.id %}" class="text-org-secondary hover:text-org-secondary-dark">Edit</a>
+                                        <a href="{% url 'delete_alumni' alumni.id %}" class="text-red-600 hover:text-red-900">Delete</a>
                                     </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
                                         <svg class="w-12 h-12 text-purple-400 mb-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -298,69 +288,96 @@
     </main>
 
     <script>
-        // Select All functionality
+        // --- THIS IS THE NEW JAVASCRIPT FUNCTION FOR SINGLE INVITES ---
+        // It creates a temporary form in memory and submits it to perform the POST action securely.
+        function sendSingleInvite(url, name) {
+            if (confirm(`Are you sure you want to send an invite to ${name}?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+
+                // Add the CSRF token from the main form
+                const csrfToken = document.querySelector('#bulk-form [name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+
+                // Append the form to the body, submit it, and then remove it.
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
+        }
+
+        // --- Your existing JavaScript for bulk operations ---
         document.getElementById('select-all').addEventListener('change', function () {
             const checkboxes = document.querySelectorAll('.alumni-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
             updateSelectedCount();
         });
 
-        // Update selected count
         function updateSelectedCount() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
             document.getElementById('selected-count').textContent = selected + ' selected';
         }
 
-        // Add event listeners to individual checkboxes
         document.querySelectorAll('.alumni-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', updateSelectedCount);
         });
 
-        // Handle bulk export
+        function handleBulkInvite() {
+            const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
+            if (selected === 0) {
+                alert('Please select at least one alumni profile to invite.');
+                return;
+            }
+            if (confirm(`Are you sure you want to send invites to ${selected} selected alumni?`)) {
+                const form = document.getElementById('bulk-form');
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'invite';
+                form.appendChild(actionInput);
+                form.submit();
+            }
+        }
+
         function handleBulkExport() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
             if (selected === 0) {
-                customAlert('Please select at least one alumni profile.', 'No Selection');
+                alert('Please select at least one alumni profile to export.');
                 return;
             }
-
-            customConfirm('Export ' + selected + ' alumni profile(s) to CSV?', 'Export Alumni').then(function(confirmed) {
-                if (confirmed) {
-                    const form = document.getElementById('bulk-form');
-                    const actionInput = document.createElement('input');
-                    actionInput.type = 'hidden';
-                    actionInput.name = 'action';
-                    actionInput.value = 'export';
-                    form.appendChild(actionInput);
-                    form.submit();
-                }
-            });
+            if (confirm(`Export ${selected} alumni profile(s) to CSV?`)) {
+                const form = document.getElementById('bulk-form');
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'export';
+                form.appendChild(actionInput);
+                form.submit();
+            }
         }
 
-        // Handle bulk delete
         function handleBulkDelete() {
             const selected = document.querySelectorAll('.alumni-checkbox:checked').length;
             if (selected === 0) {
-                customAlert('Please select at least one alumni profile.', 'No Selection');
+                alert('Please select at least one alumni profile to delete.');
                 return;
             }
-
-            customConfirm('Are you sure you want to delete ' + selected + ' alumni profile(s)? This action cannot be undone.', 'Delete Alumni').then(function(confirmed) {
-                if (confirmed) {
-                    const form = document.getElementById('bulk-form');
-                    const actionInput = document.createElement('input');
-                    actionInput.type = 'hidden';
-                    actionInput.name = 'action';
-                    actionInput.value = 'delete';
-                    form.appendChild(actionInput);
-                    form.submit();
-                }
-            });
+            if (confirm(`Are you sure you want to delete ${selected} alumni profile(s)? This action cannot be undone.`)) {
+                const form = document.getElementById('bulk-form');
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'delete';
+                form.appendChild(actionInput);
+                form.submit();
+            }
         }
     </script>
 
 </body>
-
 </html>

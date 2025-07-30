@@ -14,10 +14,14 @@ urlpatterns = [
     
     # Organization Admin specific URLs
     path('org-admin/alumni/', views.alumni_list, name='alumni_list'),
+    path('profile/edit/', views.alumni_profile_edit, name='alumni_profile_edit'),
+    path('org-admin/alumni/<int:alumni_id>/send-invite/', views.send_invite, name='send_invite'),
+    path('alumni/set-password/<uidb64>/<token>/', views.set_alumni_password, name='set_alumni_password'),
     path('org-admin/alumni/add/', views.add_alumni, name='add_alumni'),
     path('org-admin/alumni/<int:alumni_id>/edit/', views.edit_alumni, name='edit_alumni'),
     path('org-admin/alumni/<int:alumni_id>/delete/', views.delete_alumni, name='delete_alumni'),
     path('org-admin/bulk-operations/', views.bulk_operations, name='bulk_operations'),
+    # path('alumni/bulk-operations/', views.bulk_operations, name='bulk_operations'),
     
     path('login/', AlumniLoginView.as_view(), name='login'),
     path('logout/', AlumniLogoutView.as_view(), name='logout'),

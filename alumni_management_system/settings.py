@@ -145,3 +145,4 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
