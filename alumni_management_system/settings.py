@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0n829d%pxlvh9_ek+d$pv1!nci_!58oidb_y+gi9a0n+c8zhw^'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -145,4 +150,31 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email settings for password reset
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+
+
+# Set to False in production to actually send emails
+SENDGRID_SANDBOX_MODE_IN_DEBUG = True
+
+# Email tracking features (optional)
+SENDGRID_TRACK_EMAIL_OPENS = True
+SENDGRID_TRACK_CLICKS_HTML = True
+
+# Keep your existing email address configuration
+DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
+EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+
+# For development - emails will be printed to console
+# For production, configure these with your email provider:
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
+
+# DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
+# EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '

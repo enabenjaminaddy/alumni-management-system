@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from  alumni import views
 from alumni.views import AlumniLoginView, AlumniLogoutView
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 urlpatterns = [
     path('', AlumniLoginView.as_view(), name='login'),  # Root URL redirects to login
@@ -25,4 +25,22 @@ urlpatterns = [
     
     path('login/', AlumniLoginView.as_view(), name='login'),
     path('logout/', AlumniLogoutView.as_view(), name='logout'),
+    
+    # Password Reset URLs
+    path('password-reset/', 
+         PasswordResetView.as_view(
+             template_name='alumni/password_reset.html',
+             email_template_name='alumni/password_reset_email.html',
+             subject_template_name='alumni/password_reset_subject.txt'
+         ), 
+         name='password_reset'),
+    path('password-reset/done/', 
+         PasswordResetDoneView.as_view(template_name='alumni/password_reset_done.html'), 
+         name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', 
+         PasswordResetConfirmView.as_view(template_name='alumni/password_reset_confirm.html'), 
+         name='password_reset_confirm'),
+    path('reset/done/', 
+         PasswordResetCompleteView.as_view(template_name='alumni/password_reset_complete.html'), 
+         name='password_reset_complete'),
 ]

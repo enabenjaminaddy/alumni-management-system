@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 import os
+import time
+import glob
 
 # Create your models here.
 
@@ -8,8 +10,9 @@ def user_profile_image_path(instance, filename):
     """Generate file path for user profile images"""
     # Get file extension
     ext = filename.split('.')[-1]
-    # Create filename using user ID and original extension
-    filename = f"profile_{instance.id}.{ext}"
+    # Create filename using user ID, timestamp, and original extension
+    timestamp = int(time.time())
+    filename = f"profile_{instance.id}_{timestamp}.{ext}"
     return os.path.join('profile_images', filename)
 
 EMPLOYMENT_STATUS_CHOICES = [
@@ -62,3 +65,46 @@ class AlumniProfile(models.Model):
                 os.remove(self.profile_picture.path)
             self.profile_picture = None
             self.save()
+    
+    def cleanup_old_profile_pictures(self):
+        """Delete old profile picture files for this user"""
+        from django.conf import settings
+        if self.id:
+            # Find all old profile pictures for this user
+            profile_images_dir = os.path.join(settings.MEDIA_ROOT, 'profile_images')
+            if os.path.exists(profile_images_dir):
+                pattern = os.path.join(profile_images_dir, f"profile_{self.id}_*.*")
+                old_files = glob.glob(pattern)
+                
+                # Keep the current file, delete the rest
+                current_file = None
+                if self.profile_picture:
+                    current_file = self.profile_picture.path
+                
+                for file_path in old_files:
+                    if current_file and os.path.abspath(file_path) != os.path.abspath(current_file):
+                        try:
+                            os.remove(file_path)
+                        except (OSError, FileNotFoundError):
+                            pass  # File already deleted or doesn't exist
+    
+    def save(self, *args, **kwargs):
+        # Check if this is an update and profile picture changed
+        if self.pk:
+            try:
+                old_instance = AlumniProfile.objects.get(pk=self.pk)
+                if old_instance.profile_picture != self.profile_picture and old_instance.profile_picture:
+                    # Profile picture changed, delete old file first
+                    try:
+                        if os.path.isfile(old_instance.profile_picture.path):
+                            os.remove(old_instance.profile_picture.path)
+                    except (OSError, FileNotFoundError):
+                        pass
+            except AlumniProfile.DoesNotExist:
+                pass
+        
+        super().save(*args, **kwargs)
+        
+        # Clean up any remaining old files after saving
+        if self.pk:
+            self.cleanup_old_profile_pictures()
