@@ -13,6 +13,7 @@ from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 import csv
+import os
 from django.utils import timezone
 from django.contrib.auth.models import Group, User
 from django.db.models import Q, Exists, OuterRef
@@ -24,8 +25,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
 from django.utils.crypto import get_random_string
-
-
 
 # Create your views here.
 @login_required
@@ -281,7 +280,7 @@ def send_invite(request, alumni_id):
 def add_alumni(request):
     """Add new alumni profile"""
     if request.method == 'POST':
-        form = AlumniProfileForm(request.POST)
+        form = AlumniProfileForm(request.POST, request.FILES)
         if form.is_valid():
             alumni_profile = form.save()
             messages.success(request, f'Alumni profile for {alumni_profile.first_name} {alumni_profile.last_name} created successfully!')
@@ -308,9 +307,38 @@ def edit_alumni(request, alumni_id):
     alumni = get_object_or_404(AlumniProfile, id=alumni_id)
     
     if request.method == 'POST':
-        form = AlumniProfileForm(request.POST, instance=alumni)
+        form = AlumniProfileForm(request.POST, request.FILES, instance=alumni)
+        
+        # Check if user wants to remove profile picture
+        remove_picture = request.POST.get('remove_picture') == 'true'
+        
         if form.is_valid():
-            form.save()
+            # Get the old profile picture before saving
+            old_picture = alumni.profile_picture
+            
+            # Handle profile picture removal
+            if remove_picture and old_picture:
+                if os.path.isfile(old_picture.path):
+                    try:
+                        os.remove(old_picture.path)
+                    except (OSError, FileNotFoundError):
+                        pass
+                # Clear the profile picture field
+                form.instance.profile_picture = None
+            
+            # Save the form
+            updated_alumni = form.save()
+            
+            # If profile picture changed (new upload), clean up old file
+            if 'profile_picture' in form.changed_data and updated_alumni.profile_picture and not remove_picture:
+                if old_picture and old_picture != updated_alumni.profile_picture:
+                    # Delete old file if it exists
+                    if os.path.isfile(old_picture.path):
+                        try:
+                            os.remove(old_picture.path)
+                        except (OSError, FileNotFoundError):
+                            pass
+            
             messages.success(request, f'Alumni profile for {alumni.first_name} {alumni.last_name} updated successfully!')
             return redirect('alumni_list')
         else:

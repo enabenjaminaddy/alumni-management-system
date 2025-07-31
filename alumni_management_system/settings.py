@@ -145,4 +145,18 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email settings for password reset
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # For production
+
+# For development - emails will be printed to console
+# For production, configure these with your email provider:
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
+
+DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
+EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '

@@ -171,7 +171,8 @@
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10 mr-4">
                                             {% if alumni.profile_picture %}
-                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ alumni.profile_picture.url }}" alt="Profile">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ alumni.profile_picture.url }}?v={{ alumni.id }}_{% now 'U' %}"
+                                                alt="Profile">
                                             {% else %}
                                             <div class="h-10 w-10 rounded-full bg-org-primary flex items-center justify-center">
                                                 <span class="text-white text-sm font-medium">{{ alumni.get_initials }}</span>
