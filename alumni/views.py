@@ -49,7 +49,7 @@ def home(request):
     return render(request, 'alumni/home.html', context)
 
 @login_required
-def edit_form(request):
+def edit_form(request): 
     # Get or create profile for the current user
     try:
         profile = request.user.alumni_profile
@@ -89,9 +89,9 @@ def edit_form(request):
         if profile:
             form = AlumniProfileForm(instance=profile)
             messages.info(request, 'Edit your profile details below. Your current information is displayed.')
-        else:
-            form = AlumniProfileForm()
-            messages.info(request, 'Create your alumni profile by filling out the form below.')
+    # else:
+    #     form = AlumniProfileForm()
+    #         messages.info(request, 'Create your alumni profile by filling out the form below.')
     
     context = {
         'form': form,
@@ -569,7 +569,7 @@ class AlumniLoginView(LoginView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Alumni Login'
         return context
-
+    
 
 class AlumniLogoutView(LogoutView):
     """Custom logout view that accepts both GET and POST requests"""

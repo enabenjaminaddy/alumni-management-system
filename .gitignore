@@ -298,3 +298,15 @@ local_settings.py
 .env
 db.sqlite3
 csv_db/*
+*.jpg
+*.png
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.webp
+*.svg
+*.heic
+
+*.example
