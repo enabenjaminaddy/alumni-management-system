@@ -211,18 +211,28 @@
                                         <span class="bg-org-primary text-white px-2 py-1 rounded-full text-xs">Network</span>
                                         {% endif %}
                                     </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    {% if alumni.has_user_account %}
-                                        <button disabled class="bg-gray-200 text-gray-500 px-3 py-1 rounded text-sm cursor-not-allowed">Account Exists</button>
-                                    {% else %}
-                                        <button type="button" 
-                                                onclick="sendSingleInvite('{% url 'send_invite' alumni.id %}', '{{ alumni.first_name }} {{ alumni.last_name }}')"
-                                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors shadow">
-                                            Send Invite
-                                        </button>
-                                    {% endif %}
-                                </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {% if alumni.is_user_active %}
+                                            <!-- State 1: User has an active account -->
+                                            <button disabled class="bg-green-100 text-green-700 px-3 py-1 rounded text-sm cursor-not-allowed font-medium">
+                                                Account Active
+                                            </button>
+                                        {% elif alumni.has_user_account %}
+                                            <!-- State 2: User exists but is inactive (invite expired) -->
+                                            <button type="button" 
+                                                    onclick="sendSingleInvite('{% url 'send_invite' alumni.id %}', '{{ alumni.first_name }} {{ alumni.last_name }}')"
+                                                    class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors shadow">
+                                                Resend Invite
+                                            </button>
+                                        {% else %}
+                                            <!-- State 3: No user account exists yet -->
+                                            <button type="button" 
+                                                    onclick="sendSingleInvite('{% url 'send_invite' alumni.id %}', '{{ alumni.first_name }} {{ alumni.last_name }}')"
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors shadow">
+                                                Send Invite
+                                            </button>
+                                        {% endif %}
+                                    </td>
                                 <td class="actions-column px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         <a href="{% url 'edit_alumni' alumni.id %}" class="text-org-secondary hover:text-org-secondary-dark">Edit</a>

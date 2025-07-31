@@ -183,9 +183,9 @@ def alumni_list(request):
     # We create a subquery that checks if a User exists with the same email.
     user_exists_subquery = User.objects.filter(email=OuterRef('email'))
     
-    # Start with all alumni and add the annotation
     alumni = AlumniProfile.objects.annotate(
-        has_user_account=Exists(user_exists_subquery)
+        has_user_account=Exists(user_exists_subquery.values('pk')),
+        is_user_active=Exists(user_exists_subquery.filter(is_active=True).values('pk'))
     ).order_by('-created_at')
     
     # Apply search filter
@@ -384,37 +384,59 @@ def delete_alumni(request, alumni_id):
 
 def _send_alumni_invitation(request, alumni):
     """
-    Helper function to create a user and send an invitation email.
-    This is not a view and is meant to be called by other views.
-    It returns a tuple: (success_boolean, message_string)
+    Helper function to create or reuse a user account and send an invitation email.
+    This version is more robust and handles unlinked, existing user accounts.
+    Returns a tuple: (success_boolean, message_string)
     """
-    # 1. Check if a user account already exists for this profile
-    if alumni.user or User.objects.filter(email=alumni.email).exists():
-        return (False, f"An account for {alumni.email} already exists.")
+    # 1. Check if the profile is linked to an ACTIVE user. If so, we can't do anything.
+    if alumni.user and alumni.user.is_active:
+        return (False, f"An active account for {alumni.email} already exists.")
 
-    # 2. Create a temporary, inactive user account
-    temp_password = get_random_string(length=12)
-    user = User.objects.create_user(
-        username=alumni.email,
-        email=alumni.email,
-        password=temp_password,
-        first_name=alumni.first_name,
-        last_name=alumni.last_name,
-        is_active=False  # The account is inactive until they set a password
-    )
-    
-    # 3. Link the new user to the alumni profile
-    alumni.user = user
-    alumni.save()
+    user = None
+    action_message = "sent invitation"
 
-    # 4. Generate a unique, one-time-use token and activation link
+    # 2. Determine if we can reuse an existing user or need to create one.
+    if alumni.user:
+        # The profile is already linked to an INACTIVE user. We will resend the invite.
+        user = alumni.user
+        action_message = "resent invitation"
+    else:
+        # The profile is not linked. Check if an unlinked user with this email exists.
+        try:
+            user = User.objects.get(email=alumni.email)
+            
+            # If a user was found, check if they are already linked to a *different* profile.
+            if hasattr(user, 'alumni_profile') and user.alumni_profile != alumni:
+                return (False, f"Error: The user {alumni.email} is already linked to another alumni profile.")
+            
+            # If the user is unlinked, we can claim them for this profile.
+            alumni.user = user
+            alumni.save()
+            action_message = "resent invitation to existing user"
+
+        except User.DoesNotExist:
+            # No user found with this email, so we create a new one.
+            temp_password = get_random_string(length=12)
+            user = User.objects.create_user(
+                username=alumni.email,
+                email=alumni.email,
+                password=temp_password,
+                first_name=alumni.first_name,
+                last_name=alumni.last_name,
+                is_active=False
+            )
+            alumni.user = user
+            alumni.save()
+            action_message = "sent invitation"
+
+    # 3. Generate a new token and activation link for the user we found or created.
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     activation_link = request.build_absolute_uri(
         f'/alumni/set-password/{uid}/{token}/'
     )
 
-    # 5. Send the email using a template
+    # 4. Send the email
     email_subject = 'You are invited to the Alumni Portal!'
     email_body = render_to_string('alumni/invite_email.html', {
         'alumni': alumni,
@@ -422,8 +444,8 @@ def _send_alumni_invitation(request, alumni):
     })
     send_mail(email_subject, email_body, 'no-reply@yourfoundation.org', [alumni.email])
     
-    # 6. Return a success status and message
-    return (True, f"Successfully sent an invitation to {alumni.first_name} {alumni.last_name}.") 
+    # 5. Return a success status and message
+    return (True, f"Successfully {action_message} to {alumni.first_name} {alumni.last_name}.")
 
 
 @login_required
