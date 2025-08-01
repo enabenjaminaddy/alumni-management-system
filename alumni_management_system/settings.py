@@ -31,7 +31,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://alumni-management-system-h0qp.onrender.com'
+]
 
 
 # Application definition
@@ -81,24 +83,24 @@ WSGI_APPLICATION = 'alumni_management_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # SQLite Configuration (temporarily for testing role system)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# PostgreSQL Configuration (switch back when conda env is active)
 # DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "alumni",
-#         "USER": "postgres",
-#         "PASSWORD": "Postgres.ayadata.21",
-#         "HOST": "3.232.163.161",
-#         "PORT": "5432",
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+# PostgreSQL Configuration (switch back when conda env is active)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "alumni",
+        "USER": "postgres",
+        "PASSWORD": "Postgres.ayadata.21",
+        "HOST": "3.232.163.161",
+        "PORT": "5432",
+    }
+}
 
 
 # Password validation
