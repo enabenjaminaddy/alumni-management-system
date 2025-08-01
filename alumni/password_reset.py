@@ -29,8 +29,13 @@ class SendGridPasswordResetView(PasswordResetView):
         domain = context['domain']
         site_name = context['site_name']
         
-        # Create the reset URL
-        reset_url = f"{domain}/reset/{uid}/{token}/"
+        # Create the reset URL with protocol (this was missing!)
+        protocol = context['protocol']
+        reset_url = f"{protocol}://{domain}/reset/{uid}/{token}/"
+        
+        # Print debug info regardless of DEBUG setting
+        print(f"Password reset requested for: {to_email[0]}")
+        print(f"Reset URL generated: {reset_url}")
         
         # Get the SendGrid template ID
         template_id = TEMPLATE_IDS['password_reset']
@@ -49,6 +54,11 @@ class SendGridPasswordResetView(PasswordResetView):
         
         # First try SendGrid template
         try:
+            print(f"\n--- SENDING PASSWORD RESET EMAIL ---")
+            print(f"From: {from_email}")
+            print(f"To: {to_email[0]}")
+            print(f"Template ID: {template_id}")
+            
             # Create SendGrid message
             message = Mail(
                 from_email=from_email,
@@ -100,7 +110,12 @@ class SendGridPasswordResetView(PasswordResetView):
             
         except Exception as e:
             # On failure, fall back to the default method
-            print(f"SendGrid failed, falling back to default: {str(e)}")
+            print(f"\n!!! PASSWORD RESET EMAIL ERROR !!!")
+            print(f"SendGrid failed with error: {str(e)}")
+            print(f"API Key exists: {'Yes' if settings.SENDGRID_API_KEY else 'No'}")
+            print(f"API Key starts with: {settings.SENDGRID_API_KEY[:5] + '...' if settings.SENDGRID_API_KEY else 'N/A'}")
+            print(f"Template ID used: {template_id}")
+            print(f"Falling back to default email method...")
             
             # Get the subject and body
             subject = loader.render_to_string(subject_template_name, context)
@@ -115,5 +130,13 @@ class SendGridPasswordResetView(PasswordResetView):
                 html_email = loader.render_to_string(html_email_template_name, context)
                 email_message.attach_alternative(html_email, 'text/html')
                 
+            # Print debug info for the fallback email
+            print(f"Sending fallback email with subject: {subject}")
+            print(f"To: {to_email[0]}")
+            
             # Send the email
-            email_message.send()
+            try:
+                email_message.send()
+                print(f"Fallback email sent successfully")
+            except Exception as fallback_error:
+                print(f"ERROR: Fallback email also failed: {str(fallback_error)}")
