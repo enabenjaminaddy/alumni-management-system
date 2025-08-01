@@ -15,11 +15,11 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -168,6 +168,7 @@ SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 # Email tracking features (optional)
 SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
+SENDGRID_ECHO_TO_STDOUT = True # Prints email content to console in DEBUG mode
 
 # Keep your existing email address configuration
 DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjabamemorialfdn.org.gh>'
