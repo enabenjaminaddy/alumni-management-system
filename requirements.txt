@@ -1,8 +1,10 @@
 # Django framework
 Django==5.1.7  # Match the version from your project comment (line 4)
+django-allauth==65.4.1
 
 # Database adapters
-psycopg2-binary==2.9.9  # PostgreSQL adapter (for when you switch back to PostgreSQL)
+psutil==5.9.8
+psycopg2-binary==2.9.10
 
 # Image processing (for profile pictures)
 pillow==11.1.0  # Required for ImageField
