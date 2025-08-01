@@ -159,7 +159,7 @@ EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 INSTALLED_APPS += ['sendgrid_backend']
 
 # SendGrid API key - prefer environment variable but fall back to direct setting if needed
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
 
 # Set to False in production to actually send emails
