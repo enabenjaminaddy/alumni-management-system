@@ -229,50 +229,21 @@ def send_invite(request, alumni_id):
     if request.method == 'POST':
         try:
             alumni = get_object_or_404(AlumniProfile, id=alumni_id)
+            
+            # Call the helper function to do all the work
+            success, message = _send_alumni_invitation(request, alumni)
 
-            # 1. Check if a user account already exists
-            if User.objects.filter(email=alumni.email).exists():
-                messages.error(request, f"An account for {alumni.email} already exists.")
-                return redirect('alumni_list')
+            # Display the message that the helper function returned
+            if success:
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
 
-            # 2. Create a temporary, inactive user account
-            # We use a long, random password that no one will ever use.
-            temp_password = get_random_string(length=12)
-            user = User.objects.create_user(
-                username=alumni.email, # Use email as username for simplicity
-                email=alumni.email,
-                password=temp_password,
-                first_name=alumni.first_name,
-                last_name=alumni.last_name,
-                is_active=False # The account is inactive until they set a password
-            )
-            alumni.user = user
-            alumni.save()
-
-            # 3. Generate a unique, one-time-use token and activation link
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            activation_link = request.build_absolute_uri(
-                f'/alumni/set-password/{uid}/{token}/' # This URL needs to exist
-            )
-
-            # 4. Send the email
-            email_subject = 'You are invited to the Alumni Portal!'
-            email_body = render_to_string('alumni/invite_email.html', {
-                'alumni': alumni,
-                'activation_link': activation_link,
-            })
-            send_mail(email_subject, email_body, 'no-reply@yourfoundation.org', [alumni.email])
-
-            messages.success(request, f"Successfully sent an invitation to {alumni.first_name}.")
-
-            print(f"Sending invite to {alumni.email}...")
-            # --------------------------------------------------
-            # messages.success(request, f"Successfully sent an invitation to {alumni.first_name} {alumni.last_name}.")
         except AlumniProfile.DoesNotExist:
             messages.error(request, "Alumni profile not found.")
     
     return redirect('alumni_list')
+
 
 
 @login_required
@@ -413,7 +384,7 @@ def delete_alumni(request, alumni_id):
 def _send_alumni_invitation(request, alumni):
     """
     Helper function to create or reuse a user account and send an invitation email.
-    This version is more robust and handles unlinked, existing user accounts.
+    This version handles both initial invites and resending to existing inactive users.
     Returns a tuple: (success_boolean, message_string)
     """
     # 1. Check if the profile is linked to an ACTIVE user. If so, we can't do anything.
@@ -430,19 +401,20 @@ def _send_alumni_invitation(request, alumni):
         action_message = "resent invitation"
     else:
         # The profile is not linked. Check if an unlinked user with this email exists.
-        try:
-            user = User.objects.get(email=alumni.email)
-            
-            # If a user was found, check if they are already linked to a *different* profile.
+        existing_user = User.objects.filter(email=alumni.email).first()
+        
+        if existing_user:
+            # An unlinked user was found. Let's use it.
+            user = existing_user
+            # Check if this user is already linked to a different profile.
             if hasattr(user, 'alumni_profile') and user.alumni_profile != alumni:
                 return (False, f"Error: The user {alumni.email} is already linked to another alumni profile.")
             
-            # If the user is unlinked, we can claim them for this profile.
+            # Link the found user to this profile.
             alumni.user = user
             alumni.save()
             action_message = "resent invitation to existing user"
-
-        except User.DoesNotExist:
+        else:
             # No user found with this email, so we create a new one.
             temp_password = get_random_string(length=12)
             user = User.objects.create_user(

@@ -17,58 +17,37 @@
             background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
         }
 
-        /* This is the new, more robust CSS approach to styling the form fields */
-        .form-field label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-            /* gray-700 */
-        }
-
-        .form-field input,
-        .form-field select,
-        .form-field textarea {
+        /* Styles for Django-rendered form widgets */
+        .form-input {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 1px solid #d1d5db;
-            /* gray-300 */
-            border-radius: 0.5rem;
-            /* rounded-lg */
-            background-color: #f9fafb;
-            /* gray-50 */
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #f9fafb; /* gray-50 */
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .form-field input:focus,
-        .form-field select:focus,
-        .form-field textarea:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--org-secondary);
             box-shadow: 0 0 0 3px rgba(115, 31, 148, 0.15);
             background-color: white;
         }
 
-        .form-field input[type="checkbox"] {
+        .form-checkbox {
             height: 1.25rem;
             width: 1.25rem;
             border-radius: 0.25rem;
+            border-color: #d1d5db;
             color: var(--org-secondary);
         }
-
-        .form-field .help-text {
-            font-size: 0.875rem;
-            color: #6b7280;
-            /* gray-500 */
-            margin-top: 0.5rem;
-        }
-
-        .form-field .errorlist {
+        
+        /* Style for Django's error messages */
+        .errorlist {
             list-style-type: none;
             padding: 0;
             margin: 0.25rem 0 0 0;
-            color: #ef4444;
-            /* red-500 */
+            color: #ef4444; /* red-500 */
             font-size: 0.875rem;
         }
 
@@ -99,12 +78,6 @@
             position: relative;
             display: inline-block;
             cursor: pointer;
-        }
-
-        .file-input-container input[type="file"] {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
         }
 
         .file-input-label {
@@ -153,8 +126,7 @@
         <div class="bg-white shadow-xl rounded-lg border border-gray-200">
             <div class="px-8 py-5 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">Alumni Information</h2>
-                <p class="text-sm text-gray-500 mt-1">Fill out the form below to {% if alumni %}update{% else %}create{%
-                    endif %} the alumni profile.</p>
+                <p class="text-sm text-gray-500 mt-1">Fill out the form below to {% if alumni %}update{% else %}create{% endif %} the alumni profile.</p>
             </div>
 
             <form method="POST" action="" enctype="multipart/form-data" class="p-8">
@@ -171,219 +143,166 @@
                 <div class="border-b border-gray-200 pb-8 mb-8">
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Personal Information</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="form-field md:col-span-2">
+                        <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-org-secondary mb-4">Profile Picture</label>
                             <div class="flex flex-col items-center space-y-4">
-                                <!-- Profile Picture Preview -->
                                 <div class="profile-preview" id="profile-preview">
                                     {% if alumni and alumni.profile_picture %}
-                                    <img src="{{ alumni.profile_picture.url }}?v={{ alumni.id }}_{% now 'U' %}"
-                                        alt="Profile Picture" id="preview-image">
+                                    <img src="{{ alumni.profile_picture.url }}?v={{ alumni.id }}_{% now 'U' %}" alt="Profile Picture" id="preview-image">
                                     {% else %}
-                                    <span id="preview-initials">
-                                        {% if alumni %}{{ alumni.get_initials }}{% else %}+{% endif %}
-                                    </span>
+                                    <span id="preview-initials">{% if alumni %}{{ alumni.get_initials }}{% else %}+{% endif %}</span>
                                     {% endif %}
                                 </div>
-
-                                <!-- File Upload Controls -->
                                 <div class="flex space-x-2">
-                                    <div class="file-input-container">
-                                        <input type="file" name="profile_picture" accept="image/*"
-                                            id="id_profile_picture"
-                                            style="position: absolute; left: -9999px; opacity: 0;">
-                                        <label for="id_profile_picture" class="file-input-label">
-                                            {% if alumni and alumni.profile_picture %}Change Photo{% else %}Upload
-                                            Photo{% endif %}
-                                        </label>
-                                    </div>
+                                    <label for="id_profile_picture" class="file-input-label">
+                                        {% if alumni and alumni.profile_picture %}Change Photo{% else %}Upload Photo{% endif %}
+                                    </label>
+                                    {{ form.profile_picture }}
                                     {% if alumni and alumni.profile_picture %}
-                                    <button type="button" onclick="removeProfilePicture()"
-                                        class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
+                                    <button type="button" onclick="removeProfilePicture()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
                                         Remove
                                     </button>
                                     {% endif %}
                                 </div>
-
-                                <p class="text-sm text-gray-500 text-center">Upload a passport-style photograph
-                                    (optional)<br>
-                                    Recommended: Square image, at least 300x300 pixels</p>
+                                <p class="text-sm text-gray-500 text-center">Upload a passport-style photograph (optional)<br>Recommended: Square image, at least 300x300 pixels</p>
                                 {{ form.profile_picture.errors }}
                             </div>
                         </div>
-                        <div class="form-field">{{ form.first_name.label_tag }} {{ form.first_name.errors }} {{
-                            form.first_name }}</div>
-                        <div class="form-field">{{ form.last_name.label_tag }} {{ form.last_name.errors }} {{
-                            form.last_name }}</div>
-                        <div class="form-field">{{ form.email.label_tag }} {{ form.email.errors }} {{ form.email }}
-                        </div>
-                        <div class="form-field">{{ form.phone_number.label_tag }} {{ form.phone_number.errors }} {{
-                            form.phone_number }}</div>
-                        <div class="form-field md:col-span-2">{{ form.current_address.label_tag }} {{
-                            form.current_address.errors }} {{ form.current_address }}</div>
-                        <div class="form-field md:col-span-2">{{ form.social_media_accounts.label_tag }} {{
-                            form.social_media_accounts.errors }} {{ form.social_media_accounts }} <p class="help-text">
-                                {{ form.social_media_accounts.help_text }}</p>
-                        </div>
+                        <div>{{ form.first_name.label_tag }}{{ form.first_name.errors }}{{ form.first_name }}</div>
+                        <div>{{ form.last_name.label_tag }}{{ form.last_name.errors }}{{ form.last_name }}</div>
+                        <div>{{ form.email.label_tag }}{{ form.email.errors }}{{ form.email }}</div>
+                        <div>{{ form.phone_number.label_tag }}{{ form.phone_number.errors }}{{ form.phone_number }}</div>
+                        <div class="md:col-span-2">{{ form.current_address.label_tag }}{{ form.current_address.errors }}{{ form.current_address }}</div>
+                        <div class="md:col-span-2">{{ form.social_media_accounts.label_tag }}{{ form.social_media_accounts.errors }}{{ form.social_media_accounts }}<p class="help-text">{{ form.social_media_accounts.help_text }}</p></div>
                     </div>
                 </div>
 
-                <!-- Education Section -->
+                <!-- Other sections -->
                 <div class="border-b border-gray-200 pb-8 mb-8">
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Education</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="form-field">{{ form.course_studied.label_tag }} {{ form.course_studied.errors }} {{
-                            form.course_studied }}</div>
-                        <div class="form-field">{{ form.graduation_year.label_tag }} {{ form.graduation_year.errors }}
-                            {{ form.graduation_year }}</div>
+                        <div>{{ form.course_studied.label_tag }}{{ form.course_studied.errors }}{{ form.course_studied }}</div>
+                        <div>{{ form.graduation_year.label_tag }}{{ form.graduation_year.errors }}{{ form.graduation_year }}</div>
                     </div>
                 </div>
 
-                <!-- Employment Section -->
                 <div class="border-b border-gray-200 pb-8 mb-8">
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Employment</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="form-field">{{ form.employment_status.label_tag }} {{ form.employment_status.errors
-                            }} {{ form.employment_status }}</div>
-                        <div class="form-field">{{ form.company_name.label_tag }} {{ form.company_name.errors }} {{
-                            form.company_name }}</div>
-                        <div class="form-field md:col-span-2">{{ form.company_location.label_tag }} {{
-                            form.company_location.errors }} {{ form.company_location }}</div>
+                        <div>{{ form.employment_status.label_tag }}{{ form.employment_status.errors }}{{ form.employment_status }}</div>
+                        <div>{{ form.company_name.label_tag }}{{ form.company_name.errors }}{{ form.company_name }}</div>
+                        <div class="md:col-span-2">{{ form.company_location.label_tag }}{{ form.company_location.errors }}{{ form.company_location }}</div>
                     </div>
                 </div>
 
-                <!-- Skills & Experience Section -->
                 <div class="border-b border-gray-200 pb-8 mb-8">
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Skills & Experience</h3>
                     <div class="space-y-6">
-                        <div class="form-field">{{ form.skills_acquired.label_tag }} {{ form.skills_acquired.errors }}
-                            {{ form.skills_acquired }}</div>
-                        <div class="form-field">{{ form.work_experience.label_tag }} {{ form.work_experience.errors }}
-                            {{ form.work_experience }}</div>
+                        <div>{{ form.skills_acquired.label_tag }}{{ form.skills_acquired.errors }}{{ form.skills_acquired }}</div>
+                        <div>{{ form.work_experience.label_tag }}{{ form.work_experience.errors }}{{ form.work_experience }}</div>
                     </div>
                 </div>
 
-                <!-- Financial Information Section -->
                 <div class="border-b border-gray-200 pb-8 mb-8">
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Financial Information</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="form-field">{{ form.monthly_savings.label_tag }} {{ form.monthly_savings.errors }}
-                            {{ form.monthly_savings }}</div>
-                        <div class="form-field">{{ form.monthly_investment.label_tag }} {{
-                            form.monthly_investment.errors }} {{ form.monthly_investment }}</div>
+                        <div>{{ form.monthly_savings.label_tag }}{{ form.monthly_savings.errors }}{{ form.monthly_savings }}</div>
+                        <div>{{ form.monthly_investment.label_tag }}{{ form.monthly_investment.errors }}{{ form.monthly_investment }}</div>
                     </div>
                 </div>
 
-                <!-- Additional Information Section -->
                 <div>
                     <h3 class="text-lg font-semibold text-org-secondary mb-6">Additional Information</h3>
                     <div class="space-y-6">
-                        <div class="form-field">{{ form.testimonial.label_tag }} {{ form.testimonial.errors }} {{
-                            form.testimonial }} <p class="help-text">{{ form.testimonial.help_text }}</p>
-                        </div>
+                        <div>{{ form.testimonial.label_tag }}{{ form.testimonial.errors }}{{ form.testimonial }}<p class="help-text">{{ form.testimonial.help_text }}</p></div>
                         <div class="flex items-center space-x-8 pt-2">
-                            <div class="form-field flex items-center">{{ form.mentorship_interest.errors }} {{
-                                form.mentorship_interest }} <label for="{{ form.mentorship_interest.id_for_label }}"
-                                    class="ml-3 !mb-0">{{ form.mentorship_interest.label }}</label></div>
-                            <div class="form-field flex items-center">{{ form.networking_interest.errors }} {{
-                                form.networking_interest }} <label for="{{ form.networking_interest.id_for_label }}"
-                                    class="ml-3 !mb-0">{{ form.networking_interest.label }}</label></div>
+                            <div class="flex items-center">{{ form.mentorship_interest.errors }}{{ form.mentorship_interest }}<label for="{{ form.mentorship_interest.id_for_label }}" class="ml-3 !mb-0">{{ form.mentorship_interest.label }}</label></div>
+                            <div class="flex items-center">{{ form.networking_interest.errors }}{{ form.networking_interest }}<label for="{{ form.networking_interest.id_for_label }}" class="ml-3 !mb-0">{{ form.networking_interest.label }}</label></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
                 <div class="pt-8 mt-8 border-t border-gray-200 flex justify-end space-x-4">
-                    <a href="{% url 'alumni_list' %}"
-                        class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-md hover:bg-gray-300 text-center transition-colors">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                        class="foundation-gradient text-white font-semibold py-2 px-6 rounded-md hover:opacity-90 transition-all shadow-lg">
-                        {{ submit_text|default:"Save Changes" }}
-                    </button>
+                    <a href="{% url 'alumni_list' %}" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-md hover:bg-gray-300 text-center transition-colors">Cancel</a>
+                    <button type="submit" class="foundation-gradient text-white font-semibold py-2 px-6 rounded-md hover:opacity-90 transition-all shadow-lg">{{ submit_text|default:"Save Changes" }}</button>
                 </div>
             </form>
         </div>
     </main>
 
     <script>
-        // This script adds CSS classes to the form elements Django generates.
-        // This is a clean way to style them without a third-party library.
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.form-field').forEach(function (field) {
-                field.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="url"], select, textarea').forEach(function (el) {
-                    el.classList.add('form-input');
-                });
-                field.querySelectorAll('input[type="checkbox"]').forEach(function (el) {
-                    el.classList.add('form-checkbox');
-                });
-            });
-        });
-
-        // Image preview functionality
-        document.getElementById('id_profile_picture').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('profile-preview');
-            const previewImage = document.getElementById('preview-image');
-            const previewInitials = document.getElementById('preview-initials');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    if (previewImage) {
-                        previewImage.src = e.target.result;
-                    } else {
-                        // Create new image element
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = 'Profile Picture';
-                        img.id = 'preview-image';
-
-                        // Clear preview and add image
-                        preview.innerHTML = '';
-                        preview.appendChild(img);
-                    }
-                };
-                reader.readAsDataURL(file);
-
-                // Update button text
-                const label = document.querySelector('.file-input-label');
-                if (label) {
-                    label.textContent = 'Change Photo';
-                }
-            }
-        });
-
-        // Remove profile picture functionality
+        // The removeProfilePicture function needs to be globally accessible
         function removeProfilePicture() {
             if (confirm('Are you sure you want to remove the profile picture?')) {
-                // Set hidden field to indicate picture removal
                 document.getElementById('remove_picture').value = 'true';
-
-                // Clear the file input
-                document.getElementById('id_profile_picture').value = '';
-
-                // Reset preview to initials
+                const fileInput = document.getElementById('id_profile_picture');
+                if (fileInput) {
+                    fileInput.value = '';
+                }
+                
                 const preview = document.getElementById('profile-preview');
                 const initials = '{% if alumni %}{{ alumni.get_initials }}{% else %}+{% endif %}';
-                preview.innerHTML = '<span id="preview-initials">' + initials + '</span>';
-
-                // Update button text and hide remove button
+                preview.innerHTML = `<span id="preview-initials">${initials}</span>`;
+                
                 const label = document.querySelector('.file-input-label');
                 if (label) {
                     label.textContent = 'Upload Photo';
                 }
 
-                // Hide the remove button
                 const removeBtn = document.querySelector('button[onclick="removeProfilePicture()"]');
                 if (removeBtn) {
                     removeBtn.style.display = 'none';
                 }
-
                 alert('Profile picture will be removed when you save the form.');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add CSS classes to the form elements Django generates.
+            document.querySelectorAll('form input[type="text"], form input[type="email"], form input[type="number"], form input[type="url"], form select, form textarea').forEach(function (el) {
+                el.classList.add('form-input');
+            });
+            document.querySelectorAll('form input[type="checkbox"]').forEach(function (el) {
+                el.classList.add('form-checkbox');
+            });
+            
+            // Hide the default file input widget and set up its event listener
+            const fileInput = document.getElementById('id_profile_picture');
+            if (fileInput) {
+                fileInput.style.position = 'absolute';
+                fileInput.style.opacity = '0';
+                fileInput.style.width = '0.1px';
+                fileInput.style.height = '0.1px';
+                fileInput.style.overflow = 'hidden';
+                fileInput.style.zIndex = '-1';
+
+                // Image preview functionality
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    const preview = document.getElementById('profile-preview');
+                    const previewImage = document.getElementById('preview-image');
+
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (previewImage) {
+                                previewImage.src = e.target.result;
+                            } else {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.alt = 'Profile Picture';
+                                img.id = 'preview-image';
+                                preview.innerHTML = '';
+                                preview.appendChild(img);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                        document.querySelector('.file-input-label').textContent = 'Change Photo';
+                    }
+                });
+            }
+        });
     </script>
 </body>
 
