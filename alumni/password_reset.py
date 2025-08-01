@@ -58,12 +58,36 @@ class SendGridPasswordResetView(PasswordResetView):
             # Add template
             message.template_id = template_id
             
+            # Set subject explicitly to prevent spam filtering
+            subject_text = "Password Reset"
+            if hasattr(settings, 'EMAIL_SUBJECT_PREFIX') and settings.EMAIL_SUBJECT_PREFIX:
+                subject_text = f"{settings.EMAIL_SUBJECT_PREFIX} {subject_text}"
+                
+            message.subject = subject_text
+            
+            # Add subject to dynamic data so it can be used in template
+            dynamic_data['subject'] = subject_text
+            
             # Add dynamic data
             message.dynamic_template_data = dynamic_data
             
+            # Print debug info if in DEBUG mode
+            if settings.DEBUG:
+                print(f"Sending password reset email to: {to_email[0]}")
+                print(f"Subject: {subject_text}")
+                print(f"Template ID: {template_id}")
+                import json
+                print(f"Template data: {json.dumps(dynamic_data, indent=2)}")
+            
             # Get API client and send
             sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-            sg.send(message)
+            response = sg.send(message)
+            
+            # Print response info if in debug mode
+            if settings.DEBUG:
+                print(f"SendGrid API response: {response.status_code}")
+                if not (200 <= response.status_code < 300):
+                    print(f"SendGrid response body: {response.body}")
             
         except Exception as e:
             # On failure, fall back to the default method

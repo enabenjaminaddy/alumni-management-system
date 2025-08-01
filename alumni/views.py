@@ -410,19 +410,40 @@ def send_sendgrid_template_email(to_email, template_id, dynamic_data, subject=No
         # Set the SendGrid template ID
         message.template_id = template_id
         
+        # Always set a subject to prevent spam filtering
+        if subject:
+            message.subject = subject
+            # Also add it to dynamic data so template can access it
+            dynamic_data['subject'] = subject
+        else:
+            # Set a default subject to ensure one is always provided
+            default_subject = f"{settings.EMAIL_SUBJECT_PREFIX} Notification"
+            message.subject = default_subject
+            dynamic_data['subject'] = default_subject
+        
         # Add template data (dynamic template variables)
         message.dynamic_template_data = dynamic_data
         
-        # Set subject if provided
-        if subject:
-            message.subject = subject
+        # Print debug info if in DEBUG mode
+        if settings.DEBUG:
+            print(f"Sending SendGrid email to: {to_email}")
+            print(f"Subject: {message.subject}")
+            print(f"Template ID: {template_id}")
+            print(f"Template data: {json.dumps(dynamic_data, indent=2)}")
             
         # Send the email
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
         
         # Check if the email was sent successfully (status codes 2xx)
-        return 200 <= response.status_code < 300
+        success = 200 <= response.status_code < 300
+        
+        if settings.DEBUG:
+            print(f"SendGrid API response: {response.status_code}")
+            if not success:
+                print(f"SendGrid response body: {response.body}")
+                
+        return success
         
     except Exception as e:
         print(f"SendGrid error: {str(e)}")
