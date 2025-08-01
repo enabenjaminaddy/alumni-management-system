@@ -5,7 +5,7 @@ Django==5.1.7  # Match the version from your project comment (line 4)
 psycopg2-binary==2.9.9  # PostgreSQL adapter (for when you switch back to PostgreSQL)
 
 # Image processing (for profile pictures)
-Pillow==10.2.0  # Required for ImageField
+pillow==11.1.0  # Required for ImageField
 
 # Security packages
 django-cors-headers==4.3.1  # If you need CORS support
@@ -22,3 +22,5 @@ django-debug-toolbar==4.3.0  # Optional, for development debugging
 sendgrid==6.11.0  # SendGrid API for email delivery
 django-sendgrid-v5==1.2.3  # Django integration for SendGrid
 
+uvicorn
+dj-database-url
