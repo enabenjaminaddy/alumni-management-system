@@ -11,6 +11,10 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from alumni.sendgrid_templates import TEMPLATE_IDS
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class SendGridPasswordResetView(PasswordResetView):
     """Custom password reset view that uses SendGrid templates."""
     
@@ -33,9 +37,9 @@ class SendGridPasswordResetView(PasswordResetView):
         protocol = context['protocol']
         reset_url = f"{protocol}://{domain}/reset/{uid}/{token}/"
         
-        # Print debug info regardless of DEBUG setting
-        print(f"Password reset requested for: {to_email[0]}")
-        print(f"Reset URL generated: {reset_url}")
+        # logger.info debug info regardless of DEBUG setting
+        logger.info(f"Password reset requested for: {to_email[0]}")
+        logger.info(f"Reset URL generated: {reset_url}")
         
         # Get the SendGrid template ID
         template_id = TEMPLATE_IDS['password_reset']
@@ -54,10 +58,10 @@ class SendGridPasswordResetView(PasswordResetView):
         
         # First try SendGrid template
         try:
-            print(f"\n--- SENDING PASSWORD RESET EMAIL ---")
-            print(f"From: {from_email}")
-            print(f"To: {to_email[0]}")
-            print(f"Template ID: {template_id}")
+            logger.info(f"\n--- SENDING PASSWORD RESET EMAIL ---")
+            logger.info(f"From: {from_email}")
+            logger.info(f"To: {to_email[0]}")
+            logger.info(f"Template ID: {template_id}")
             
             # Create SendGrid message
             message = Mail(
@@ -81,41 +85,41 @@ class SendGridPasswordResetView(PasswordResetView):
             
             # Double check subject is set (Debug output)
             if settings.DEBUG:
-                print(f"Debug: Setting password reset email subject to: '{subject_text}'")
+                logger.info(f"Debug: Setting password reset email subject to: '{subject_text}'")
                 
             # Force message headers to include subject if needed
             if hasattr(settings, 'SENDGRID_TEMPLATE_SUBJECT_OVERRIDE') and settings.SENDGRID_TEMPLATE_SUBJECT_OVERRIDE:
-                print(f"Debug: Using subject override for password reset: '{subject_text}'")
+                logger.info(f"Debug: Using subject override for password reset: '{subject_text}'")
             
             # Add dynamic data
             message.dynamic_template_data = dynamic_data
             
-            # Print debug info if in DEBUG mode
+            # logger.info debug info if in DEBUG mode
             if settings.DEBUG:
-                print(f"Sending password reset email to: {to_email[0]}")
-                print(f"Subject: {subject_text}")
-                print(f"Template ID: {template_id}")
+                logger.info(f"Sending password reset email to: {to_email[0]}")
+                logger.info(f"Subject: {subject_text}")
+                logger.info(f"Template ID: {template_id}")
                 import json
-                print(f"Template data: {json.dumps(dynamic_data, indent=2)}")
+                logger.info(f"Template data: {json.dumps(dynamic_data, indent=2)}")
             
             # Get API client and send
             sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
             response = sg.send(message)
             
-            # Print response info if in debug mode
+            # logger.info response info if in debug mode
             if settings.DEBUG:
-                print(f"SendGrid API response: {response.status_code}")
+                logger.info(f"SendGrid API response: {response.status_code}")
                 if not (200 <= response.status_code < 300):
-                    print(f"SendGrid response body: {response.body}")
+                    logger.info(f"SendGrid response body: {response.body}")
             
         except Exception as e:
             # On failure, fall back to the default method
-            print(f"\n!!! PASSWORD RESET EMAIL ERROR !!!")
-            print(f"SendGrid failed with error: {str(e)}")
-            print(f"API Key exists: {'Yes' if settings.SENDGRID_API_KEY else 'No'}")
-            print(f"API Key starts with: {settings.SENDGRID_API_KEY[:5] + '...' if settings.SENDGRID_API_KEY else 'N/A'}")
-            print(f"Template ID used: {template_id}")
-            print(f"Falling back to default email method...")
+            logger.info(f"\n!!! PASSWORD RESET EMAIL ERROR !!!")
+            logger.info(f"SendGrid failed with error: {str(e)}")
+            logger.info(f"API Key exists: {'Yes' if settings.SENDGRID_API_KEY else 'No'}")
+            logger.info(f"API Key starts with: {settings.SENDGRID_API_KEY[:5] + '...' if settings.SENDGRID_API_KEY else 'N/A'}")
+            logger.info(f"Template ID used: {template_id}")
+            logger.info(f"Falling back to default email method...")
             
             # Get the subject and body
             subject = loader.render_to_string(subject_template_name, context)
@@ -130,13 +134,13 @@ class SendGridPasswordResetView(PasswordResetView):
                 html_email = loader.render_to_string(html_email_template_name, context)
                 email_message.attach_alternative(html_email, 'text/html')
                 
-            # Print debug info for the fallback email
-            print(f"Sending fallback email with subject: {subject}")
-            print(f"To: {to_email[0]}")
+            # logger.info debug info for the fallback email
+            logger.info(f"Sending fallback email with subject: {subject}")
+            logger.info(f"To: {to_email[0]}")
             
             # Send the email
             try:
                 email_message.send()
-                print(f"Fallback email sent successfully")
+                logger.info(f"Fallback email sent successfully")
             except Exception as fallback_error:
-                print(f"ERROR: Fallback email also failed: {str(fallback_error)}")
+                logger.info(f"ERROR: Fallback email also failed: {str(fallback_error)}")
