@@ -519,12 +519,23 @@ def _send_alumni_invitation(request, alumni):
         'token': token
     }
     
-    # Send the email using SendGrid
+    # Prepare a clear subject line for the invitation email
+    invitation_subject = f'{settings.EMAIL_SUBJECT_PREFIX} You are invited to the Alumni Portal!'
+    
+    # Add subject to dynamic data so the template can access it
+    dynamic_data['subject'] = invitation_subject
+    
+    # Override any template subject with our explicit subject
+    # This ensures the subject appears even if template settings might override it
+    if hasattr(settings, 'SENDGRID_TEMPLATE_SUBJECT_OVERRIDE') and settings.SENDGRID_TEMPLATE_SUBJECT_OVERRIDE:
+        print(f"Debug: Using subject override with: {invitation_subject}")
+    
+    # Send the email using SendGrid with explicit subject
     email_sent = send_sendgrid_template_email(
         to_email=alumni.email,
         template_id=template_id,
         dynamic_data=dynamic_data,
-        subject='You are invited to the Alumni Portal!'
+        subject=invitation_subject
     )
     
     if not email_sent:

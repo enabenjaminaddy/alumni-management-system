@@ -205,6 +205,9 @@ INSTALLED_APPS += ['sendgrid_backend']
 # SendGrid API key - prefer environment variable but fall back to direct setting if needed
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
+# Set to True to ensure subjects are explicitly set in code rather than from templates
+# This helps ensure emails have proper subjects and don't go to spam
+SENDGRID_TEMPLATE_SUBJECT_OVERRIDE = True
 
 # Set to False in production to actually send emails
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False

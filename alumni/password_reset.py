@@ -62,11 +62,20 @@ class SendGridPasswordResetView(PasswordResetView):
             subject_text = "Password Reset"
             if hasattr(settings, 'EMAIL_SUBJECT_PREFIX') and settings.EMAIL_SUBJECT_PREFIX:
                 subject_text = f"{settings.EMAIL_SUBJECT_PREFIX} {subject_text}"
-                
+            
+            # Ensure the subject is set directly on the message
             message.subject = subject_text
             
             # Add subject to dynamic data so it can be used in template
             dynamic_data['subject'] = subject_text
+            
+            # Double check subject is set (Debug output)
+            if settings.DEBUG:
+                print(f"Debug: Setting password reset email subject to: '{subject_text}'")
+                
+            # Force message headers to include subject if needed
+            if hasattr(settings, 'SENDGRID_TEMPLATE_SUBJECT_OVERRIDE') and settings.SENDGRID_TEMPLATE_SUBJECT_OVERRIDE:
+                print(f"Debug: Using subject override for password reset: '{subject_text}'")
             
             # Add dynamic data
             message.dynamic_template_data = dynamic_data
