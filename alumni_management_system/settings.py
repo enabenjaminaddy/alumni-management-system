@@ -29,10 +29,12 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    'alumni-management-system-h0qp.onrender.com'
+    'alumni-management-system-h0qp.onrender.com',
+    'localhost',
+    '127.0.0.1'
 ]
 
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,7 +140,29 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# Static files configuration for production
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security settings for production
+if not DEBUG:
+    # HTTPS settings
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    
+    # HSTS settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    
+    # CSRF settings
+    CSRF_TRUSTED_ORIGINS = ['https://alumni-management-system-h0qp.onrender.com']
+    
+    # Content security
+    SECURE_REFERRER_POLICY = 'same-origin'
+    SECURE_BROWSER_XSS_FILTER = True
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
