@@ -28,8 +28,6 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
     'alumni-management-system-h0qp.onrender.com',
@@ -37,6 +35,13 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1'
 ]
+
+# SECURITY WARNING: don't run with debug turned on in production!
+# Check for specific environment or hostname to determine if we're in development
+IS_DEVELOPMENT = os.environ.get('DJANGO_ENV') == 'development' or 'render.com' not in ALLOWED_HOSTS[0]
+DEBUG = IS_DEVELOPMENT if os.environ.get('DEBUG') is None else os.environ.get('DEBUG', 'False').lower() == 'true'
+
+print(f"Running with DEBUG={DEBUG} (IS_DEVELOPMENT={IS_DEVELOPMENT})")
 
 
 # Application definition
@@ -159,11 +164,22 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     
     # CSRF settings
-    CSRF_TRUSTED_ORIGINS = ['https://alumni-management-system-h0qp.onrender.com']
+    CSRF_TRUSTED_ORIGINS = [
+        'https://alumni-management-system-h0qp.onrender.com',
+        'https://alumni.henrydjabamemorialfdn.org.gh'
+    ]
     
     # Content security
     SECURE_REFERRER_POLICY = 'same-origin'
     SECURE_BROWSER_XSS_FILTER = True
+else:
+    # Development settings
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_PRELOAD = False
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
