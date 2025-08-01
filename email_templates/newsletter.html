@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alumni Newsletter</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+            max-width: 150px;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .article {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 25px;
+        }
+
+        .article:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .article-image {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .article h3 {
+            margin-top: 0;
+            color: #5e35b1;
+        }
+
+        .article-meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .read-more {
+            color: #5e35b1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        .cta-box {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Replace with your organization's logo -->
+            <img src="https://placehold.co/150x50/8e24aa/FFFFFF?text=HDMF+Logo" alt="Henry Djaba Memorial Foundation"
+                class="logo">
+            <h1>Alumni Newsletter - {{month}} {{year}}</h1>
+        </div>
+
+        <div class="content">
+            <p>Hello {{user.first_name}},</p>
+
+            <p>Welcome to our monthly alumni newsletter! Stay up-to-date with the latest news, events, and opportunities
+                from the Henry Djaba Memorial Foundation community.</p>
+
+            <div class="section">
+                <h2>Featured News</h2>
+
+                <div class="article">
+                    <img src="https://placehold.co/600x300/8e24aa/FFFFFF?text=Article+Image" alt="Featured Article"
+                        class="article-image">
+                    <h3>{{featured_article.title}}</h3>
+                    <div class="article-meta">Posted on {{featured_article.date}}</div>
+                    <p>{{featured_article.excerpt}}</p>
+                    <a href="{{featured_article.url}}" class="read-more">Read More →</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Alumni Spotlight</h2>
+
+                <div class="article">
+                    <img src="{{spotlight_alumni.image_url}}" alt="{{spotlight_alumni.name}}" class="article-image">
+                    <h3>{{spotlight_alumni.name}} - Class of {{spotlight_alumni.graduation_year}}</h3>
+                    <p>{{spotlight_alumni.bio}}</p>
+                    <p><strong>Current Position:</strong> {{spotlight_alumni.position}} at {{spotlight_alumni.company}}
+                    </p>
+                    <a href="{{spotlight_alumni.profile_url}}" class="read-more">View Full Profile →</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Upcoming Events</h2>
+
+                {{#each upcoming_events}}
+                <div class="article">
+                    <h3>{{this.title}}</h3>
+                    <p><strong>Date:</strong> {{this.date}} at {{this.time}}</p>
+                    <p><strong>Location:</strong> {{this.location}}</p>
+                    <p>{{this.description}}</p>
+                    <a href="{{this.registration_link}}" class="read-more">Register Now →</a>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="cta-box">
+                <h3>Update Your Profile</h3>
+                <p>Keep your information current to stay connected with the alumni network and receive personalized
+                    opportunities.</p>
+                <a href="{{profile_update_link}}" class="button">Update Profile</a>
+            </div>
+
+            <p>
+                Stay connected!<br>
+                The Henry Djaba Memorial Foundation Team
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; {{current_year}} Henry Djaba Memorial Foundation. All rights reserved.</p>
+            <p>
+                <a href="{{unsubscribe_link}}" style="color: #5e35b1;">Unsubscribe</a> |
+                <a href="{{preference_link}}" style="color: #5e35b1;">Update Email Preferences</a> |
+                <a href="{{privacy_policy}}" style="color: #5e35b1;">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -154,18 +154,23 @@ LOGOUT_URL = '/logout'
 # Email settings for password reset
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+
+# Add sendgrid_backend to installed apps
+INSTALLED_APPS += ['sendgrid_backend']
+
+# SendGrid API key - prefer environment variable but fall back to direct setting if needed
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
 
 
 # Set to False in production to actually send emails
-SENDGRID_SANDBOX_MODE_IN_DEBUG = True
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
 # Email tracking features (optional)
 SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
 
 # Keep your existing email address configuration
-DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
+DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjabamemorialfdn.org.gh>'
 EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
 
 # For development - emails will be printed to console
