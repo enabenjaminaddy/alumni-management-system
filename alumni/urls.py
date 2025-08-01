@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from  alumni import views
+from alumni import views
 from alumni.views import AlumniLoginView, AlumniLogoutView
-from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import LogoutView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from alumni.password_reset import SendGridPasswordResetView
 
 urlpatterns = [
     path('', AlumniLoginView.as_view(), name='login'),  # Root URL redirects to login
@@ -26,9 +27,9 @@ urlpatterns = [
     path('login/', AlumniLoginView.as_view(), name='login'),
     path('logout/', AlumniLogoutView.as_view(), name='logout'),
     
-    # Password Reset URLs
+    # Password Reset URLs - Using SendGrid Template
     path('password-reset/', 
-         PasswordResetView.as_view(
+         SendGridPasswordResetView.as_view(
              template_name='alumni/password_reset.html',
              email_template_name='alumni/password_reset_email.html',
              subject_template_name='alumni/password_reset_subject.txt'
