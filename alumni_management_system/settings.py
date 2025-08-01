@@ -171,7 +171,7 @@ SENDGRID_TRACK_CLICKS_HTML = True
 SENDGRID_ECHO_TO_STDOUT = True # Prints email content to console in DEBUG mode
 
 # Keep your existing email address configuration
-DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjabamemorialfdn.org.gh>'
+DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <info@henrydjabamemorialfdn.org.gh>'
 EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
 
 # For development - emails will be printed to console
