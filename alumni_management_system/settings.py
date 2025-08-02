@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'alumni',
-    # 'sslserver'
+    'sslserver'
 ]
 
 MIDDLEWARE = [
