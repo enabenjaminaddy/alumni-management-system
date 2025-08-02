@@ -104,13 +104,23 @@ WSGI_APPLICATION = 'alumni_management_system.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "alumni",
-        "USER": "postgres",
-        "PASSWORD": "Postgres.ayadata.21",
-        "HOST": "3.232.163.161",
+        "NAME": os.getenv('DB_NAME'),
+        "USER": os.getenv('USER'),
+        "PASSWORD": os.getenv('DB_PASSWORD'),
+        "HOST": os.getenv('DB_HOST'),
         "PORT": "5432",
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "alumni",
+#         "USER": "postgres",
+#         "PASSWORD": "Postgres.ayadata.21",
+#         "HOST": "3.232.163.161",
+#         "PORT": "5432",
+#     }
+# }
 
 
 # Password validation
