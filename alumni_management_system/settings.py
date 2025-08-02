@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'alumni'
+    'alumni',
+    'sslserver'
 ]
 
 MIDDLEWARE = [
@@ -196,11 +197,22 @@ LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'
 
 # Email settings for password reset
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+# Try to use SendGrid, but fall back to console backend if not available
+try:
+    import sendgrid_backend
+    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+    print("Using SendGrid email backend")
+except ImportError:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("SendGrid not available, using console email backend")
 
-# Add sendgrid_backend to installed apps
-INSTALLED_APPS += ['sendgrid_backend']
+# Add sendgrid_backend to installed apps if available
+try:
+    import sendgrid_backend
+    INSTALLED_APPS.append('sendgrid_backend')
+    print("Added sendgrid_backend to INSTALLED_APPS")
+except ImportError:
+    print("sendgrid_backend not installed, skipping app registration")
 
 # SendGrid API key - prefer environment variable but fall back to direct setting if needed
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
