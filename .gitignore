@@ -310,3 +310,4 @@ csv_db/*
 *.heic
 
 *.example
+*.bat

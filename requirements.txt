@@ -1,18 +1,23 @@
 # Django framework
 Django==5.1.7  # Match the version from your project comment (line 4)
+django-allauth==65.4.1
 
 # Database adapters
-psycopg2-binary==2.9.9  # PostgreSQL adapter (for when you switch back to PostgreSQL)
+psutil==5.9.8
+psycopg2-binary==2.9.10
 
 # Image processing (for profile pictures)
-Pillow==10.2.0  # Required for ImageField
+pillow==11.1.0  # Required for ImageField
 
 # Security packages
 django-cors-headers==4.3.1  # If you need CORS support
 python-dotenv==1.0.0  # For environment variables management
 
 # Deployment tools
+<<<<<<< HEAD
 gunicorn==21.2.0  # WSGI HTTP Server
+=======
+>>>>>>> origin/main
 whitenoise==6.6.0  # Static file serving
 
 # Development tools
@@ -21,3 +26,14 @@ django-debug-toolbar==4.3.0  # Optional, for development debugging
 # Email support
 sendgrid==6.11.0  # SendGrid API for email delivery
 django-sendgrid-v5==1.2.3  # Django integration for SendGrid
+<<<<<<< HEAD
+=======
+
+uvicorn
+dj-database-url
+gunicorn==23.0.0
+
+dj-rest-auth==7.0.1
+drf-yasg==1.21.10
+python-dotenv
+>>>>>>> origin/main

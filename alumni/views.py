@@ -22,6 +22,7 @@ from django.conf import settings
 import csv
 import json
 import os
+import json
 from django.utils import timezone
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail
@@ -32,7 +33,15 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
 from django.utils.crypto import get_random_string
+<<<<<<< HEAD
 from django.views.decorators.http import require_POST
+=======
+# SendGrid imports
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, To, TemplateId, Substitution
+from django.conf import settings
+from alumni.sendgrid_templates import TEMPLATE_IDS
+>>>>>>> origin/main
 
 # Create your views here.
 @login_required
@@ -415,6 +424,68 @@ def delete_alumni(request, alumni_id):
     }
     return render(request, 'alumni/confirm_delete.html', context)
 
+def send_sendgrid_template_email(to_email, template_id, dynamic_data, subject=None):
+    """
+    Helper function to send an email using SendGrid template.
+    
+    Args:
+        to_email: Recipient email address
+        template_id: SendGrid template ID
+        dynamic_data: Dict with template variables
+        subject: Email subject (optional, can be set in template)
+        
+    Returns:
+        Boolean indicating success or failure
+    """
+    try:
+        # Create a Mail object
+        message = Mail(
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to_emails=to_email
+        )
+        
+        # Set the SendGrid template ID
+        message.template_id = template_id
+        
+        # Always set a subject to prevent spam filtering
+        if subject:
+            message.subject = subject
+            # Also add it to dynamic data so template can access it
+            dynamic_data['subject'] = subject
+        else:
+            # Set a default subject to ensure one is always provided
+            default_subject = f"{settings.EMAIL_SUBJECT_PREFIX} Notification"
+            message.subject = default_subject
+            dynamic_data['subject'] = default_subject
+        
+        # Add template data (dynamic template variables)
+        message.dynamic_template_data = dynamic_data
+        
+        # Print debug info if in DEBUG mode
+        if settings.DEBUG:
+            print(f"Sending SendGrid email to: {to_email}")
+            print(f"Subject: {message.subject}")
+            print(f"Template ID: {template_id}")
+            print(f"Template data: {json.dumps(dynamic_data, indent=2)}")
+            
+        # Send the email
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        response = sg.send(message)
+        
+        # Check if the email was sent successfully (status codes 2xx)
+        success = 200 <= response.status_code < 300
+        
+        if settings.DEBUG:
+            print(f"SendGrid API response: {response.status_code}")
+            if not success:
+                print(f"SendGrid response body: {response.body}")
+                
+        return success
+        
+    except Exception as e:
+        print(f"SendGrid error: {str(e)}")
+        return False
+
 def _send_alumni_invitation(request, alumni):
     """
     Helper function to create or reuse a user account and send an invitation email.
@@ -470,11 +541,16 @@ def _send_alumni_invitation(request, alumni):
         f'/alumni/set-password/{uid}/{token}/'
     )
 
-    # 4. Send the email
-    email_subject = 'You are invited to the Alumni Portal!'
-    email_body = render_to_string('alumni/invite_email.html', {
-        'alumni': alumni,
+    # 4. Send the email using SendGrid template
+    # Get the template ID from our settings
+    template_id = TEMPLATE_IDS['alumni_invitation']
+    
+    # Dynamic data for the template
+    dynamic_data = {
+        'first_name': alumni.first_name,
+        'last_name': alumni.last_name,
         'activation_link': activation_link,
+<<<<<<< HEAD
     })
     send_mail(
         email_subject,
@@ -482,6 +558,41 @@ def _send_alumni_invitation(request, alumni):
         settings.DEFAULT_FROM_EMAIL,
         [alumni.email],
     )
+=======
+        'organization_name': 'Henry Djaba Memorial Foundation',
+        'email': alumni.email,
+        'uid': uid,
+        'token': token
+    }
+    
+    # Prepare a clear subject line for the invitation email
+    invitation_subject = f'{settings.EMAIL_SUBJECT_PREFIX} You are invited to the Alumni Portal!'
+    
+    # Add subject to dynamic data so the template can access it
+    dynamic_data['subject'] = invitation_subject
+    
+    # Override any template subject with our explicit subject
+    # This ensures the subject appears even if template settings might override it
+    if hasattr(settings, 'SENDGRID_TEMPLATE_SUBJECT_OVERRIDE') and settings.SENDGRID_TEMPLATE_SUBJECT_OVERRIDE:
+        print(f"Debug: Using subject override with: {invitation_subject}")
+    
+    # Send the email using SendGrid with explicit subject
+    email_sent = send_sendgrid_template_email(
+        to_email=alumni.email,
+        template_id=template_id,
+        dynamic_data=dynamic_data,
+        subject=invitation_subject
+    )
+    
+    if not email_sent:
+        # Fallback to traditional email if SendGrid fails
+        email_subject = 'You are invited to the Alumni Portal!'
+        email_body = render_to_string('alumni/invite_email.html', {
+            'alumni': alumni,
+            'activation_link': activation_link,
+        })
+        send_mail(email_subject, email_body, settings.DEFAULT_FROM_EMAIL, [alumni.email])
+>>>>>>> origin/main
     
     # 5. Return a success status and message
     return (True, f"Successfully {action_message} to {alumni.first_name} {alumni.last_name}.")
