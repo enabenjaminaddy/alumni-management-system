@@ -1,303 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Login - Henry Djaba Memorial Foundation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --org-primary: #4EB4C3;
-            --org-primary-dark: #3a8a96;
-            --org-secondary: #731F94;
-            --org-secondary-dark: #5c1976;
-            --org-primary-light: #7bc5d1;
-            --org-secondary-light: #9c4fb8;
-        }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-        }
-        
-        /* Custom color classes */
-        .bg-org-primary { background-color: var(--org-primary); }
-        .bg-org-primary-dark { background-color: var(--org-primary-dark); }
-        .bg-org-secondary { background-color: var(--org-secondary); }
-        .bg-org-secondary-dark { background-color: var(--org-secondary-dark); }
-        .bg-org-primary-light { background-color: var(--org-primary-light); }
-        .bg-org-secondary-light { background-color: var(--org-secondary-light); }
-        
-        .text-org-primary { color: var(--org-primary); }
-        .text-org-primary-dark { color: var(--org-primary-dark); }
-        .text-org-secondary { color: var(--org-secondary); }
-        .text-org-secondary-dark { color: var(--org-secondary-dark); }
-        .text-org-primary-light { color: var(--org-primary-light); }
-        .text-org-secondary-light { color: var(--org-secondary-light); }
-        
-        .border-org-primary { border-color: var(--org-primary); }
-        .border-org-secondary { border-color: var(--org-secondary); }
-        
-        .ring-org-primary { --tw-ring-color: var(--org-primary); }
-        .ring-org-secondary { --tw-ring-color: var(--org-secondary); }
-        
-        .hover\:bg-org-primary-dark:hover { background-color: var(--org-primary-dark); }
-        .hover\:bg-org-secondary-dark:hover { background-color: var(--org-secondary-dark); }
-        .hover\:text-org-primary-dark:hover { color: var(--org-primary-dark); }
-        .hover\:text-org-secondary-dark:hover { color: var(--org-secondary-dark); }
+{% extends 'alumni/base_auth.html' %}
 
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
-        
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            max-width: 400px;
-            width: 90%;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-        
-        .modal-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 1rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-icon.success { background-color: #10b981; }
-        .modal-icon.warning { background-color: #f59e0b; }
-        .modal-icon.error { background-color: #ef4444; }
-        .modal-icon.info { background-color: var(--org-primary); }
-    </style>
-</head>
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
-    <!-- Modal Component -->
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <div id="modalIcon" class="modal-icon">
-                <svg id="modalIconSvg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                </svg>
-            </div>
-            <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-2"></h3>
-            <p id="modalMessage" class="text-gray-600 mb-6"></p>
-            <div id="modalButtons" class="flex space-x-3 justify-center"></div>
-        </div>
-    </div>
-    <div class="flex w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <!-- Left Panel - Branding -->
-        <div
-            class="hidden lg:flex w-1/2 items-center justify-center foundation-gradient p-12 text-white relative overflow-hidden">
+{% block title %}Alumni Login - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="flex w-full max-w-4xl bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="hidden lg:flex w-1/2 items-center justify-center foundation-gradient p-12 text-white relative overflow-hidden">
             <div class="relative z-10 text-center">
-                <div class="mb-6">
-                    <h1 class="text-3xl font-bold mb-2">Henry Djaba Memorial Foundation</h1>
-                    <div class="w-16 h-1 bg-white mx-auto rounded mb-4"></div>
-                </div>
-                <h2 class="text-2xl font-semibold mb-4">Alumni Management System</h2>
-                <p class="text-purple-100 text-lg max-w-md">
-                    Connect with fellow graduates, update your profile, and stay engaged with our vibrant alumni community.
+                <h1 class="text-3xl font-bold mb-2">Alumni Management System</h1>
+                <div class="w-16 h-1 bg-white mx-auto rounded mb-6"></div>
+                <p class="text-white/90 text-lg max-w-md">
+                    Connect with fellow graduates, update your profile, and stay engaged with the alumni community.
                 </p>
             </div>
-            <!-- Decorative elements -->
-            <div class="absolute -bottom-32 -left-20 w-80 h-80 border-4 border-white border-opacity-20 rounded-full"></div>
-            <div class="absolute -top-40 -right-20 w-96 h-96 border-4 border-white border-opacity-20 rounded-full"></div>
+            <div class="absolute -bottom-32 -left-20 w-80 h-80 border-4 border-white/20 rounded-full"></div>
+            <div class="absolute -top-40 -right-20 w-96 h-96 border-4 border-white/20 rounded-full"></div>
         </div>
 
-        <!-- Right Panel - Login Form -->
-        <div class="w-full lg:w-1/2 p-12 bg-gradient-to-br from-white to-purple-50">
+        <div class="w-full lg:w-1/2 p-8 sm:p-12">
             <div class="w-full max-w-md mx-auto">
-                <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-org-secondary">Welcome Back</h1>
-                    <p class="text-gray-600 mt-2">Sign in to access your alumni dashboard</p>
+                <div class="text-center mb-8 lg:text-left">
+                    <h2 class="text-2xl font-bold text-gray-900">Welcome back</h2>
+                    <p class="text-gray-600 mt-1">Sign in to access your alumni dashboard</p>
                 </div>
-        
-                <!-- Display messages -->
+
                 {% if messages %}
-                {% for message in messages %}
-                <div
-                    class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                    {{ message }}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="rounded-md px-4 py-3 text-sm
+                        {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-100
+                        {% elif message.tags == 'success' %}bg-green-50 text-green-800 border border-green-100
+                        {% else %}bg-blue-50 text-blue-800 border border-blue-100{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
                 {% endif %}
 
-                <form method="post" action="{% url 'login' %}" class="space-y-6">
+                <form method="post" action="{% url 'login' %}" class="space-y-5">
                     {% csrf_token %}
-                    
+
                     <div>
-                        <label for="username" class="block text-sm font-medium text-org-secondary mb-2">Username</label>
-                        <input type="text" name="username" id="username"
-                            class="w-full px-4 py-3 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-org-secondary focus:border-transparent transition-colors bg-white"
-                            placeholder="Enter your username" required>
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" name="username" id="username" class="form-input"
+                            placeholder="Enter your username" required autofocus>
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium text-org-secondary mb-2">Password</label>
-                        <input type="password" name="password" id="password"
-                            class="w-full px-4 py-3 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-org-secondary focus:border-transparent transition-colors bg-white"
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-input"
                             placeholder="Enter your password" required>
                     </div>
 
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center">
+                        <label class="inline-flex items-center gap-2 text-sm text-gray-600">
                             <input type="checkbox" id="remember"
-                                class="rounded border-purple-300 text-org-secondary focus:ring-org-secondary">
-                            <label for="remember" class="ml-2 text-sm text-gray-600">Remember me</label>
-                        </div>
-                        <a href="{% url 'password_reset' %}" class="text-sm font-medium text-org-secondary hover:text-org-secondary-dark">Forgot
-                            password?</a>
+                                class="rounded border-gray-300 text-org-secondary focus:ring-org-secondary">
+                            Remember me
+                        </label>
+                        <a href="{% url 'password_reset' %}" class="text-sm font-medium text-org-secondary hover:underline">
+                            Forgot password?
+                        </a>
                     </div>
 
-                    <div>
-                        <button type="submit"
-                            class="w-full foundation-gradient text-white font-semibold py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-org-secondary transition-all shadow-lg">
-                            Sign In
-                        </button>
-                    </div>
+                    <button type="submit" class="btn-primary w-full py-3">Sign In</button>
                 </form>
-
-                <!-- Test Accounts Section -->
-                <div class="mt-8 p-4 bg-white bg-opacity-60 rounded-md border border-purple-200">
-                    <h3 class="text-sm font-semibold text-org-secondary mb-2">Test Accounts:</h3>
-                    <div class="text-xs text-gray-600 space-y-1">
-                        <p><strong>Organization Admin:</strong> orgadmin / admin123</p>
-                        <p><strong>Alumni:</strong> alumni1 / alumni123</p>
-                        <p><strong>Alumni:</strong> alumni2 / alumni123</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // Custom Modal System
-        class CustomModal {
-            constructor() {
-                this.modal = document.getElementById('customModal');
-                this.icon = document.getElementById('modalIcon');
-                this.iconSvg = document.getElementById('modalIconSvg');
-                this.title = document.getElementById('modalTitle');
-                this.message = document.getElementById('modalMessage');
-                this.buttons = document.getElementById('modalButtons');
-            }
-
-            show(type, title, message, buttons = []) {
-                this.setIcon(type);
-                this.title.textContent = title;
-                this.message.textContent = message;
-                this.setButtons(buttons);
-                this.modal.classList.add('active');
-
-                return new Promise((resolve) => {
-                    this.resolve = resolve;
-                });
-            }
-
-            hide() {
-                this.modal.classList.remove('active');
-                if (this.resolve) {
-                    this.resolve(false);
-                }
-            }
-
-            setIcon(type) {
-                this.icon.className = `modal-icon ${type}`;
-                const paths = {
-                    success: 'M5 13l4 4L19 7',
-                    error: 'M6 18L18 6M6 6l12 12',
-                    warning: 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-                    info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                };
-                this.iconSvg.querySelector('path').setAttribute('d', paths[type]);
-            }
-
-            setButtons(buttons) {
-                this.buttons.innerHTML = '';
-                buttons.forEach(button => {
-                    const btn = document.createElement('button');
-                    btn.textContent = button.text;
-                    btn.className = button.primary
-                        ? 'px-4 py-2 bg-org-primary text-white rounded-lg hover:bg-org-primary-dark transition-colors'
-                        : 'px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors';
-                    btn.onclick = () => {
-                        this.modal.classList.remove('active');
-                        if (this.resolve) {
-                            this.resolve(button.value);
-                        }
-                    };
-                    this.buttons.appendChild(btn);
-                });
-            }
-        }
-
-        // Initialize modal system
-        const modal = new CustomModal();
-
-        // Global functions to replace alert and confirm
-        window.customAlert = function (message, title = 'Notice') {
-            return modal.show('info', title, message, [
-                { text: 'OK', primary: true, value: true }
-            ]);
-        };
-
-        window.customConfirm = function (message, title = 'Confirm') {
-            return modal.show('warning', title, message, [
-                { text: 'Cancel', primary: false, value: false },
-                { text: 'Confirm', primary: true, value: true }
-            ]);
-        };
-
-        window.customSuccess = function (message, title = 'Success') {
-            return modal.show('success', title, message, [
-                { text: 'OK', primary: true, value: true }
-            ]);
-        };
-
-        window.customError = function (message, title = 'Error') {
-            return modal.show('error', title, message, [
-                { text: 'OK', primary: true, value: true }
-            ]);
-        };
-
-        // Close modal on overlay click
-        document.getElementById('customModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                modal.hide();
-            }
-        });
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}

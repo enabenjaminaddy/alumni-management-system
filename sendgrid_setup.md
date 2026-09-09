@@ -36,8 +36,8 @@ SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
 
 # Use the same from email you've already configured
-DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
-EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+DEFAULT_FROM_EMAIL = 'Alumni Management System <noreply@example.com>'
+EMAIL_SUBJECT_PREFIX = '[Alumni Portal] '
 ```
 
 ## 4. Verify Your Domain/Sender Identity
@@ -66,7 +66,7 @@ from django.core.mail import send_mail
 send_mail(
     subject='SendGrid Test Email',
     message='This is a test email from your Alumni Management System.',
-    from_email='noreply@henrydjaba.org',
+    from_email='noreply@example.com',
     recipient_list=['your-test-email@example.com'],
     fail_silently=False,
 )

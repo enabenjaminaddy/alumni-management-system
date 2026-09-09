@@ -26,12 +26,18 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-insecure-key-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,testserver',
+    ).split(',')
+    if h.strip()
+]
 
 
 # Application definition
@@ -69,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'alumni.context_processors.user_role',
             ],
         },
     },
@@ -88,15 +95,15 @@ DATABASES = {
     }
 }
 
-# PostgreSQL Configuration (switch back when conda env is active)
+# PostgreSQL (production): set DATABASE_URL-style env vars when switching.
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "alumni",
-#         "USER": "postgres",
-#         "PASSWORD": "Postgres.ayadata.21",
-#         "HOST": "3.232.163.161",
-#         "PORT": "5432",
+#         "NAME": os.environ.get("POSTGRES_DB", "alumni"),
+#         "USER": os.environ.get("POSTGRES_USER", "postgres"),
+#         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
+#         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+#         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
 #     }
 # }
 
@@ -165,17 +172,8 @@ SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
 SENDGRID_ECHO_TO_STDOUT = True # Prints email content to console in DEBUG mode
 
-# Keep your existing email address configuration
-DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
-EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
-
-# For development - emails will be printed to console
-# For production, configure these with your email provider:
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@gmail.com'
-# EMAIL_HOST_PASSWORD = 'your-app-password'
-
-# DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
-# EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'Alumni Management System <noreply@example.com>',
+)
+EMAIL_SUBJECT_PREFIX = '[Alumni Portal] '

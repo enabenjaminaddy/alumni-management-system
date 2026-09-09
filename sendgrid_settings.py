@@ -25,8 +25,8 @@ SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
 
 # Keep your existing email address configuration
-DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
-EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+DEFAULT_FROM_EMAIL = 'Alumni Management System <noreply@example.com>'
+EMAIL_SUBJECT_PREFIX = '[Alumni Portal] '
 
 # Add sendgrid_backend to your INSTALLED_APPS
 # INSTALLED_APPS = [

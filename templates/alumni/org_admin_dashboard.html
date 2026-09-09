@@ -1,209 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Henry Djaba Memorial Foundation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    {% include 'alumni/base_styles.html' %}
-    <style>
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation Header -->
-    <header class="foundation-gradient shadow-lg">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-20 items-center justify-between">
-                <div class="flex items-center">
-                    <div class="text-white">
-                        <h1 class="text-xl font-bold">Henry Djaba Memorial Foundation</h1>
-                        <p class="text-sm text-purple-100">Organization Admin Dashboard</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-purple-100">{{ user.first_name|default:user.username }}</span>
-                    <a href="{% url 'logout' %}"
-                        class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
-                        Logout
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+{% extends 'alumni/base.html' %}
 
-    <main class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Welcome Section -->
-        <div class="mb-8">
-            <div class="flex items-center">
-                <div class="w-8 h-8 bg-org-secondary rounded-md flex items-center justify-center shadow">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        </div>
-                <div class="ml-4">
-                    <h2 class="text-2xl font-bold text-gray-900">Welcome back, {{ user.first_name|default:user.username }}!</h2>
-                    <p class="text-gray-600">Manage your Henry Djaba Memorial Foundation alumni network and track engagement</p>
-                </div>
-                </div>
-                </div>
+{% block title %}Admin Dashboard - Alumni Management System{% endblock %}
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Total Alumni -->
-            <div class="bg-white rounded-lg shadow-lg border border-purple-100 p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-md">
-                        <svg class="w-6 h-6 text-org-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Alumni</p>
-                        <p class="text-2xl font-bold text-org-secondary">{{ total_alumni }}</p>
-                    </div>
-                </div>
-                </div>
-<!-- Employed Alumni -->
-<div class="bg-white rounded-lg shadow-lg border border-green-100 p-6">
-    <div class="flex items-center">
-        <div class="p-2 bg-green-100 rounded-md">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6">
-                </path>
-            </svg>
-        </div>
-        <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Employed</p>
-            <p class="text-2xl font-bold text-green-600">{{ employed_alumni }}</p>
-        </div>
-                </div>
-            </div>
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
 
-            <!-- Self-Employed Alumni -->
-            <div class="bg-white rounded-lg shadow-lg border border-purple-100 p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-md">
-                        <svg class="w-6 h-6 text-org-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Self-Employed</p>
-                        <p class="text-2xl font-bold text-org-secondary">{{ self_employed_alumni }}</p>
-                    </div>
-                </div>
-            </div>
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <p class="text-gray-600 mt-1">Manage alumni and track outcomes</p>
+</div>
 
-            <!-- Recent Updates -->
-            <div class="bg-white rounded-lg shadow-lg border border-purple-100 p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-md">
-                        <svg class="w-6 h-6 text-org-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Recent Updates</p>
-                        <p class="text-2xl font-bold text-org-secondary">{{ recent_updates }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Total alumni</p>
+        <p class="text-2xl font-bold text-org-secondary mt-1">{{ total_alumni }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Employment rate</p>
+        <p class="text-2xl font-bold text-green-600 mt-1">{{ employment_rate }}%</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Seeking work</p>
+        <p class="text-2xl font-bold text-amber-600 mt-1">{{ seeking_alumni }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Mentors</p>
+        <p class="text-2xl font-bold text-org-secondary mt-1">{{ mentor_pool }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Matches</p>
+        <p class="text-2xl font-bold text-org-secondary mt-1">{{ accepted_matches }}</p>
+        <p class="text-xs text-gray-400">{{ pending_matches }} pending</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <p class="text-xs font-medium text-gray-500">Avg save / invest</p>
+        <p class="text-lg font-bold text-org-secondary mt-1">{{ savings_avg|floatformat:0 }} / {{ investment_avg|floatformat:0 }}</p>
+    </div>
+</div>
 
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow-lg border border-purple-50 mb-8">
-            <div class="px-6 py-4 border-b border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50">
-                <h3 class="text-lg font-medium text-org-secondary">Quick Actions</h3>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <a href="{% url 'add_alumni' %}"
-                        class="flex items-center p-4 border border-purple-200 rounded-lg hover:border-org-secondary hover:shadow-md transition-all bg-gradient-to-br from-white to-purple-50">
-                        <svg class="w-6 h-6 text-org-secondary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        <div>
-                            <p class="font-medium text-gray-900">Add New Alumni</p>
-                            <p class="text-sm text-gray-500">Create a new alumni profile</p>
-                        </div>
-                    </a>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">Employment by course</h3>
+        <canvas id="courseChart" height="220"></canvas>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">Alumni by graduation year</h3>
+        <canvas id="yearChart" height="220"></canvas>
+    </div>
+</div>
 
-                    <a href="{% url 'alumni_list' %}"
-                        class="flex items-center p-4 border border-purple-200 rounded-lg hover:border-org-secondary hover:shadow-md transition-all bg-gradient-to-br from-white to-purple-50">
-                        <svg class="w-6 h-6 text-org-secondary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                            </path>
-                        </svg>
-                        <div>
-                            <p class="font-medium text-gray-900">Manage Alumni</p>
-                            <p class="text-sm text-gray-500">Search, edit, and organize profiles</p>
-                        </div>
-                    </a>
+<div class="bg-white border border-gray-200 rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-100">
+        <h3 class="text-base font-semibold text-gray-900">Quick actions</h3>
+    </div>
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <a href="{% url 'add_alumni' %}" class="block border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+            <p class="font-medium text-gray-900">Add alumni</p>
+            <p class="text-sm text-gray-500">Create a new profile</p>
+        </a>
+        <a href="{% url 'alumni_list' %}" class="block border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+            <p class="font-medium text-gray-900">Manage alumni</p>
+            <p class="text-sm text-gray-500">Search, invite, export</p>
+        </a>
+        <a href="{% url 'import_alumni_csv' %}" class="block border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+            <p class="font-medium text-gray-900">Import CSV</p>
+            <p class="text-sm text-gray-500">Upload a cohort spreadsheet</p>
+        </a>
+        <a href="{% url 'announcements_list' %}" class="block border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+            <p class="font-medium text-gray-900">Announcements</p>
+            <p class="text-sm text-gray-500">{{ published_announcements }} published</p>
+        </a>
+        <a href="{% url 'mentorship_admin' %}" class="block border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+            <p class="font-medium text-gray-900">Mentorship</p>
+            <p class="text-sm text-gray-500">Review match requests</p>
+        </a>
+    </div>
+</div>
+{% endblock %}
 
-                    <!-- <button onclick="scrollToAlumniList()"
-                        class="flex items-center p-4 border border-purple-200 rounded-lg hover:border-org-secondary hover:shadow-md transition-all bg-gradient-to-br from-white to-purple-50">
-                        <svg class="w-6 h-6 text-org-secondary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
-                            </path>
-                        </svg>
-                        <div>
-                            <p class="font-medium text-gray-900">Budibase Interface</p>
-                            <p class="text-sm text-gray-500">Use external management tools</p>
-                        </div>
-                    </button> -->
-                </div>
-            </div>
-        </div>
+{% block extra_js %}
+<script>
+    const byCourse = {{ by_course_json|safe }};
+    const byYear = {{ by_year_json|safe }};
 
-        <!-- Alumni List -->
-        <!-- <div class="bg-white shadow-lg rounded-lg border border-purple-100">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-org-secondary mb-4">Alumni Management System</h3>
-                <div class="budibase-container" style="height: 800px; width: 1000;">
-                    <iframe src="http://3.232.163.161:10000/embed/annoying-ngo" class="budibase-iframe"
-                        allow="clipboard-write;camera;geolocation;fullscreen" loading="lazy">
-                    </iframe>
-                    
-                </div>
-                <div class="mt-4 text-sm text-gray-500">
-                    <p>Manage alumni profiles, search records, and perform bulk operations using the integrated management system above.
-                    </p>
-                </div>
-            </div>
-        </div> -->
-    </main>
+    new Chart(document.getElementById('courseChart'), {
+        type: 'bar',
+        data: {
+            labels: byCourse.map(r => r.course_studied || 'Unknown'),
+            datasets: [
+                { label: 'Employed', data: byCourse.map(r => r.employed), backgroundColor: '#4EB4C3' },
+                { label: 'Self-employed', data: byCourse.map(r => r.self_employed), backgroundColor: '#731F94' },
+                { label: 'Seeking', data: byCourse.map(r => r.seeking), backgroundColor: '#F59E0B' },
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } },
+        },
+    });
 
-    <script>
-        function scrollToAlumniList() {
-            document.querySelector('.budibase-container').scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-    </script>
-    
-    <style>
-        .budibase-container {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-    
-        .budibase-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
-</body>
-</html> 
+    new Chart(document.getElementById('yearChart'), {
+        type: 'line',
+        data: {
+            labels: byYear.map(r => r.graduation_year).reverse(),
+            datasets: [{
+                label: 'Alumni',
+                data: byYear.map(r => r.total).reverse(),
+                borderColor: '#731F94',
+                backgroundColor: 'rgba(115, 31, 148, 0.12)',
+                fill: true,
+                tension: 0.3,
+            }],
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+        },
+    });
+</script>
+{% endblock %}

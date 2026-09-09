@@ -1,209 +1,145 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Profile Form - Henry Djaba Memorial Foundation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    {% include 'alumni/base_styles.html' %}
-    <style>
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="w-full max-w-2xl bg-white rounded-lg shadow-2xl border border-purple-100 p-8">
-            <div class="text-center mb-8">
-                <div class="mb-4">
-                    <h3 class="text-lg font-bold text-org-secondary">Henry Djaba Memorial Foundation</h3>
-                    <div class="w-16 h-1 bg-gradient-to-r from-org-secondary to-org-primary mx-auto rounded mt-2"></div>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900">
-                    {% if has_existing_profile %}
-                    Edit Alumni Profile
-                    {% else %}
-                    Create Alumni Profile
-                    {% endif %}
-                </h1>
-                <p class="text-gray-500">
-                    {% if has_existing_profile %}
-                    Update your information below. Your current details are displayed.
-                    {% else %}
-                    Please fill out your information to create your profile with our foundation.
-                    {% endif %}
-                    </p>
-                    {% if user %}
-                    <div class="mt-2">
-                    <span
-                        class="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-100 to-blue-100 text-org-secondary rounded-full">
-                        Welcome, {{ user.first_name|default:user.username }}
-                    </span>
-                    </div>
-                    {% endif %}
-            </div>
-            
-            <!-- Display messages -->
-            {% if messages %}
-            {% for message in messages %}
-            <div
-                class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
+{% extends 'alumni/base.html' %}
 
-        <form method="POST" action="" enctype="multipart/form-data">
-            {% csrf_token %}
+{% block title %}Alumni Profile - Alumni Management System{% endblock %}
 
-            <!-- Profile Picture Section -->
-            {% if has_existing_profile and profile %}
-            <div class="mb-8 text-center">
-                <h3 class="text-lg font-semibold text-org-secondary mb-4">Profile Picture</h3>
-                <div class="flex flex-col items-center space-y-4">
-                    {% if profile.profile_picture %}
-                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
-                            class="w-32 h-32 rounded-full object-cover border-4 border-org-secondary shadow-lg">
-                        <div class="flex space-x-2">
-                            <label for="id_profile_picture"
-                                class="bg-org-secondary text-white px-4 py-2 rounded-md hover:bg-org-secondary-dark cursor-pointer text-sm shadow transition-colors">
-                                Update Picture
-                            </label>
-                            <button type="button" onclick="handleDeletePicture()"
-                                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 text-sm shadow transition-colors">
-                                Delete Picture
-                            </button>
-                            </div>
-                    {% else %}
-                        <div
-                            class="w-32 h-32 rounded-full foundation-gradient flex items-center justify-center border-4 border-org-secondary shadow-lg">
-                            <span class="text-white text-3xl font-bold">{{ profile.get_initials|default:"UN" }}</span>
-                        </div>
-                        <label for="id_profile_picture"
-                            class="bg-org-secondary text-white px-4 py-2 rounded-md hover:bg-org-secondary-dark cursor-pointer text-sm shadow transition-colors">
-                            Upload Picture
-                        </label>
-                    {% endif %}
-                    <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" class="hidden">
-                    <p class="text-sm text-gray-500">Upload a passport-style photograph (JPG, PNG)</p>
-                </div>
-            </div>
-            {% endif %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">
+        {% if has_existing_profile %}Edit your profile{% else %}Create your profile{% endif %}
+    </h1>
+    <p class="text-gray-600 mt-1">
+        {% if has_existing_profile %}
+        Update your information below.
+        {% else %}
+        Fill out your information to create your alumni profile.
+        {% endif %}
+    </p>
+</div>
 
-            <div class="django-form">
-                <!-- Profile Picture field (hidden, handled above) -->
-                {% if not has_existing_profile %}
-                <div class="mb-6">
-                    <label for="id_profile_picture" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-                    {{ form.profile_picture }}
-                    <p class="text-sm text-gray-500 mt-1">Upload a passport-style photograph (optional)</p>
+<div class="bg-white border border-gray-200 rounded-lg max-w-2xl">
+    <form method="POST" action="" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+        {% csrf_token %}
+
+        {% if has_existing_profile and profile %}
+        <div class="text-center border-b border-gray-100 pb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile picture</h2>
+            <div class="flex flex-col items-center gap-4">
+                {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                    class="w-28 h-28 rounded-full object-cover border-4 border-org-secondary">
+                <div class="flex gap-2">
+                    <label for="id_profile_picture" class="btn-primary cursor-pointer">Update Picture</label>
+                    <button type="button" onclick="handleDeletePicture()" class="btn-danger">Delete Picture</button>
                 </div>
+                {% else %}
+                <div class="w-28 h-28 rounded-full foundation-gradient flex items-center justify-center border-4 border-org-secondary">
+                    <span class="text-white text-2xl font-bold">{{ profile.get_initials|default:"UN" }}</span>
+                </div>
+                <label for="id_profile_picture" class="btn-primary cursor-pointer">Upload Picture</label>
                 {% endif %}
-                
-                <!-- Other form fields -->
-                {% for field in form %}
-                    {% if field.name != 'profile_picture' %}
-                    <p>
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% if field.help_text %}
-                        <small class="text-gray-500">{{ field.help_text }}</small>
-                        {% endif %}
-                    </p>
-                    {% endif %}
-                {% endfor %}
+                <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" class="hidden">
+                <p class="text-sm text-gray-500">JPG or PNG, passport-style</p>
             </div>
+        </div>
+        {% endif %}
 
-            <!-- Form Actions -->
-            <div class="flex space-x-4 mt-8">
-                <!-- Back Button -->
-                <a href="javascript:history.back()" class="w-1/2 text-center bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors no-underline">
-                    Back
-                </a>
-                <!-- Submit Button -->
-                <button type="submit"
-                    class="w-1/2 foundation-gradient text-white font-semibold py-3 px-4 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-org-secondary transition-all shadow-lg">
-                    Save Profile
-                </button>
+        {% if not has_existing_profile %}
+        <div>
+            <label for="id_profile_picture" class="form-label">Profile picture</label>
+            {{ form.profile_picture }}
+            <p class="text-sm text-gray-500 mt-1">Optional passport-style photograph</p>
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+            {% if field.name != 'profile_picture' %}
+            <div>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                    {{ field }}
+                    {{ field.label }}
+                </label>
+                {% else %}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% endif %}
+                {% if field.help_text %}<p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<p class="text-sm text-red-600 mt-1">{{ field.errors }}</p>{% endif %}
             </div>
-        </form>
-    </div>
+            {% endif %}
+        {% endfor %}
 
-    <script>
-                // Handle profile picture delete
-                async function handleDeletePicture() {
-                    const confirmed = await customConfirm(
-                        'Are you sure you want to delete your profile picture?',
-                        'Delete Profile Picture'
-                    );
+        <div class="flex gap-3 pt-4 border-t border-gray-100">
+            <a href="{% url 'home' %}" class="btn-secondary flex-1">Cancel</a>
+            <button type="submit" class="btn-primary flex-1">Save Profile</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
 
-                    if (confirmed) {
-                        window.location.href = "{% url 'delete_profile_picture' %}";
+{% block extra_js %}
+<script>
+    async function handleDeletePicture() {
+        const confirmed = await customConfirm(
+            'Are you sure you want to delete your profile picture?',
+            'Delete Profile Picture'
+        );
+        if (confirmed) {
+            window.location.href = "{% url 'delete_profile_picture' %}";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('id_profile_picture');
+        if (!fileInput) return;
+
+        fileInput.addEventListener('change', async function (e) {
+            if (!(e.target.files && e.target.files[0])) return;
+            const file = e.target.files[0];
+
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                await customError('Please select a valid image file (JPG, PNG, GIF)', 'Invalid File Type');
+                e.target.value = '';
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                await customError('File size must be less than 5MB', 'File Too Large');
+                e.target.value = '';
+                return;
+            }
+
+            {% if has_existing_profile and profile %}
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                const existingImg = document.querySelector('img[alt="Profile Picture"]');
+                if (existingImg) {
+                    existingImg.src = ev.target.result;
+                } else {
+                    const placeholder = document.querySelector('.foundation-gradient.rounded-full');
+                    if (placeholder) {
+                        placeholder.outerHTML = `<img src="${ev.target.result}" alt="Profile Picture" class="w-28 h-28 rounded-full object-cover border-4 border-org-secondary">`;
                     }
                 }
+            };
+            reader.readAsDataURL(file);
 
-        // Handle profile picture upload
-                document.addEventListener('DOMContentLoaded', function () {
-            const fileInput = document.getElementById('id_profile_picture');
-
-            if (fileInput) {
-                fileInput.addEventListener('change', async function (e) {
-                    if (e.target.files && e.target.files[0]) {
-                        const file = e.target.files[0];
-
-                        // Validate file type
-                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-                        if (!validTypes.includes(file.type)) {
-                            await customError('Please select a valid image file (JPG, PNG, GIF)', 'Invalid File Type');
-                            e.target.value = '';
-                            return;
-                        }
-
-                        // Validate file size (max 5MB)
-                        const maxSize = 5 * 1024 * 1024; // 5MB
-                        if (file.size > maxSize) {
-                            await customError('File size must be less than 5MB', 'File Too Large');
-                            e.target.value = '';
-                            return;
-                        }
-
-                        // Show preview if existing profile
-                        {% if has_existing_profile and profile %}
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            const existingImg = document.querySelector('img[alt="Profile Picture"]');
-                            if (existingImg) {
-                                existingImg.src = e.target.result;
-                            } else {
-                                const placeholder = document.querySelector('.w-32.h-32.rounded-full.foundation-gradient');
-                                if (placeholder) {
-                                    placeholder.outerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-org-secondary shadow-lg">`;
-                                }
-                            }
-                        };
-                        reader.readAsDataURL(file);
-
-                        const uploadNow = await customConfirm(
-                            'Upload this image? Click OK to save immediately, or Cancel to save with other changes.',
-                            'Upload Image'
-                        );
-
-                        if (uploadNow) {
-                            document.querySelector('form').submit();
-                        }
-                        {% else %}
-                        await customSuccess(
-                            `Image selected: ${file.name}. Click "Save Profile" to complete your profile with this image.`,
-                            'Image Selected'
-                        );
-                        {% endif %}
-                    }
-                });
+            const uploadNow = await customConfirm(
+                'Upload this image? Click Confirm to save immediately, or Cancel to save with other changes.',
+                'Upload Image'
+            );
+            if (uploadNow) {
+                document.querySelector('form').submit();
             }
+            {% else %}
+            await customSuccess(
+                `Image selected: ${file.name}. Click "Save Profile" to complete your profile with this image.`,
+                'Image Selected'
+            );
+            {% endif %}
         });
-    </script>
-
-</body>
-</html>
+    });
+</script>
+{% endblock %}

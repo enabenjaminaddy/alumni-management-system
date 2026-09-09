@@ -1,257 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Portal - Henry Djaba Memorial Foundation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    {% include 'alumni/base_styles.html' %}
-    <style>
-        :root {
-            --primary-color: var(--org-primary);
-            --secondary-color: var(--org-secondary);
-        }
+{% extends 'alumni/base.html' %}
 
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--org-secondary);
-            margin-bottom: 1.5rem;
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
-        }
+{% block title %}Home - Alumni Management System{% endblock %}
 
-        .profile-avatar-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-            border: 4px solid var(--org-secondary);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: auto;
-            margin-right: auto;
-        }
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %}</h1>
+    <p class="text-gray-600 mt-1">Keep your profile current and stay connected with updates and mentorship.</p>
+</div>
 
-        .initials {
-            color: white;
-            font-size: 2rem;
-            font-weight: 700;
-        }
+{% if mentorship_incoming %}
+<div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+    <p class="font-medium text-amber-900">You have {{ mentorship_incoming|length }} pending mentorship request{{ mentorship_incoming|length|pluralize }}.</p>
+    <a href="{% url 'mentorship_hub' %}" class="text-sm font-semibold text-org-secondary hover:underline">Review now →</a>
+</div>
+{% endif %}
 
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gray-50">
-    <!-- Navigation -->
-    <nav class="foundation-gradient shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex h-20 items-center justify-between">
-                <div class="flex items-center">
-                    <div class="text-white">
-                        <h1 class="text-xl font-bold text-purple-100">Henry Djaba Memorial Foundation</h1>
-                        <p class="text-sm text-purple-100">Alumni Portal</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-purple-100">{{ user.first_name|default:user.username }}</span>
-                    {% if user_role %}
-                    <span class="px-3 py-1 text-sm font-medium bg-white bg-opacity-20 text-purple-100 rounded-full">
-                        Role: {{ user_role|title|capfirst }}
-                    </span>
-                    {% endif %}
-                    <a href="{% url 'logout' %}"
-                        class="bg-white bg-opacity-20 text-white font-semibold py-2 px-4 rounded-md hover:bg-opacity-30 transition-colors text-sm">
-                        Logout
-                    </a>
-                </div>
+<div class="grid gap-6 lg:grid-cols-3">
+    <section class="lg:col-span-1 bg-white border border-gray-200 rounded-lg p-6 text-center">
+        {% if profile and profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="Profile" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-org-secondary">
+        {% else %}
+            <div class="w-24 h-24 rounded-full foundation-gradient mx-auto flex items-center justify-center border-4 border-org-secondary">
+                <span class="text-white text-2xl font-bold">{% if profile %}{{ profile.get_initials }}{% else %}?{% endif %}</span>
             </div>
+        {% endif %}
+        <h2 class="mt-4 text-lg font-semibold text-gray-900">Your profile</h2>
+        <p class="text-sm text-gray-500 mt-1 mb-4">
+            {% if profile %}{{ profile.course_studied|default:"Alumni" }}{% if profile.graduation_year %} · {{ profile.graduation_year }}{% endif %}
+            {% else %}No profile yet — create one to get started.{% endif %}
+        </p>
+        <div class="flex flex-col gap-2">
+            <a href="{% url 'edit_form' %}" class="btn-primary w-full">Edit profile</a>
+            <a href="{% url 'mentorship_hub' %}" class="btn-secondary w-full">Mentorship</a>
+            <a href="{% url 'announcements_list' %}" class="btn-secondary w-full">Updates</a>
         </div>
-    </nav>
+    </section>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Header Section -->
-        <section class="text-center mb-12">
-            <h1>Welcome Back {{ user.first_name|default:user.username }}</h1>
-            <p>We're thrilled to see you again. Connect with fellow graduates of Henry Djaba Memorial Foundation, explore recent
-                events, and keep your profile updated.</p>
-            {% if user_role %}
-            <div class="mt-4">
-                <span
-                    class="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-100 to-blue-100 text-org-secondary rounded-full">
-                    Role: {{ user_role|title|capfirst }}
-                </span>
-            </div>
-            {% endif %}
-        </section>
-
-        <!-- Profile Section -->
-        <section class="profile-section container">
-            <div class="profile-card">
-                {% if user.alumni_profile.profile_picture %}
-                    <img src="{{ user.alumni_profile.profile_picture.url }}" alt="Profile Picture" class="profile-avatar">
-                {% else %}
-                    <div class="profile-avatar-placeholder">
-                        <span class="initials">{{ user.alumni_profile.get_initials|default:"UN" }}</span>
-                    </div>
-                {% endif %}
-                
-                <h2>Your Alumni Profile</h2>
-                <p>Keep your information up to date and connect with fellow Henry Djaba Memorial Foundation alumni.</p>
-                
-                <!-- Profile Actions -->
-                <div class="profile-actions">
-                    <a href="{% url 'edit_form' %}" class="btn-primary">Edit Your Profile</a>
-                </div>
-                </div>
-                </section>
-                </div>
-                
-                <style>
-                    /* Custom CSS for Alumni Portal */
-                    body {
-                        font-family: 'Inter', sans-serif;
-                    }
-                
-                    .container {
-                        max-width: 1200px;
-                        margin: 0 auto;
-                        padding: 0 20px;
-                    }
-                
-                    /* Header styles */
-                    h1 {
-                        font-size: 2.5rem;
-                        font-weight: 700;
-                        color: #1f2937;
-                        margin-bottom: 1rem;
-                    }
-                
-                    p {
-                        font-size: 1.125rem;
-                        color: #6b7280;
-                        line-height: 1.6;
-                    }
-                
-                    /* Profile Section */
-                    .profile-section {
-                        margin: 3rem 0;
-                    }
-                
-                    .profile-card {
-                        background: linear-gradient(145deg, white 0%, #faf7ff 100%);
-                        border: 1px solid #e5d3ff;
-                        border-radius: 16px;
-                        padding: 3rem;
-                        box-shadow: 0 10px 25px -3px rgba(115, 31, 148, 0.1), 0 4px 6px -2px rgba(115, 31, 148, 0.05);
-                        text-align: center;
-                        max-width: 500px;
-                        margin: 0 auto;
-                    }
-                
-                    .profile-card h2 {
-                        font-size: 1.875rem;
-                        font-weight: 600;
-                        color: var(--org-secondary);
-                        margin-bottom: 1rem;
-                    }
-                
-                    .profile-card p {
-                        font-size: 1rem;
-                        color: #6b7280;
-                        margin-bottom: 2rem;
-                    }
-                
-                    /* Button styles */
-                    .profile-actions {
-                        display: flex;
-                        justify-content: center;
-                        gap: 1rem;
-                    }
-                
-                    .btn-primary {
-                        display: inline-block;
-                        background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-                        color: white;
-                        font-weight: 600;
-                        padding: 12px 24px;
-                        border-radius: 8px;
-                        text-decoration: none;
-                        transition: all 0.2s ease;
-                        border: none;
-                        cursor: pointer;
-                        box-shadow: 0 4px 12px rgba(115, 31, 148, 0.3);
-                    }
-                
-                    .btn-primary:hover {
-                        background: linear-gradient(135deg, var(--org-secondary-dark) 0%, var(--org-primary-dark) 100%);
-                        transform: translateY(-1px);
-                        box-shadow: 0 6px 20px rgba(115, 31, 148, 0.4);
-                    }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .profile-card {
-                margin: 0 1rem;
-                padding: 2rem;
-            }
-
-            .profile-actions {
-                flex-direction: column;
-            }
-        }
-
-        /* Animation for smooth interactions */
-        .profile-card {
-            transition: transform 0.2s ease;
-        }
-
-        .profile-card:hover {
-            transform: translateY(-2px);
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Profile picture click animation
-            const profilePicture = document.querySelector('.profile-avatar, .profile-avatar-placeholder');
-            if (profilePicture) {
-                profilePicture.addEventListener('click', function () {
-                    this.style.transform = 'scale(1.05)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 150);
-                });
-            }
-
-            // Smooth scroll for any navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
-        </script>
-</body>
-</html>
+    <section class="lg:col-span-2 space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900">Latest updates</h2>
+            <a href="{% url 'announcements_list' %}" class="text-sm font-medium text-org-secondary hover:underline">View all</a>
+        </div>
+        {% if latest_announcements %}
+        <div class="grid gap-4 sm:grid-cols-2">
+            {% for a in latest_announcements %}
+            <a href="{% url 'announcement_detail' a.pk %}" class="block bg-white border border-gray-200 rounded-lg p-4 hover:border-org-secondary transition">
+                <p class="text-xs uppercase tracking-wide font-semibold text-org-secondary">{{ a.get_category_display }}</p>
+                <h3 class="font-semibold text-gray-900 mt-1">{{ a.title }}</h3>
+                <p class="text-sm text-gray-500 mt-1">{{ a.created_at|date:"M j, Y" }}</p>
+                <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ a.body|truncatewords:25 }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white border border-gray-200 rounded-lg p-8 text-center text-gray-500 text-sm">
+            No announcements yet.
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

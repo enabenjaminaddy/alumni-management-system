@@ -1,111 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Delete - Henry Djaba Memorial Foundation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    {% include 'alumni/base_styles.html' %}
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .foundation-gradient {
-            background: linear-gradient(135deg, var(--org-secondary) 0%, var(--org-primary) 100%);
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-purple-50 to-blue-50">
+{% extends 'alumni/base.html' %}
 
-    <!-- Header -->
-    <header class="foundation-gradient shadow-lg">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-20 items-center justify-between">
-                <div class="flex items-center">
-                    <div class="text-white">
-                        <h1 class="text-xl font-bold">Henry Djaba Memorial Foundation</h1>
-                        <p class="text-sm text-purple-100">Confirm Delete</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'alumni_list' %}"
-                        class="text-purple-100 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors">
-                        ← Back to Alumni List
-                    </a>
-                    <span class="text-sm text-purple-100">{{ user.first_name|default:user.username }}</span>
-                </div>
-            </div>
+{% block title %}Confirm Delete - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white border border-gray-200 rounded-lg p-8">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-6">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
         </div>
-    </header>
 
-    <main class="mx-auto max-w-2xl py-6 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white p-8 rounded-xl shadow-2xl border border-purple-100">
-            <!-- Warning Icon -->
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-6">
-                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-            </div>
-
-            <!-- Confirmation Message -->
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold text-org-secondary mb-4">Delete Alumni Profile</h2>
-                <p class="text-gray-600 mb-6">
-                    Are you sure you want to delete the profile for <strong>{{ alumni.first_name }} {{ alumni.last_name }}</strong> from the
-                    Henry Djaba Memorial Foundation alumni directory?
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-3">Delete alumni profile</h1>
+            <p class="text-gray-600">
+                Are you sure you want to delete the profile for
+                <strong>{{ alumni.first_name }} {{ alumni.last_name }}</strong>?
+            </p>
+            <div class="bg-red-50 border border-red-100 rounded-md p-4 mt-4 text-left">
+                <p class="text-red-800 text-sm">
+                    <strong>Warning:</strong> This cannot be undone. All data associated with this profile will be permanently deleted.
                 </p>
-                <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-                    <p class="text-red-800 text-sm">
-                        <strong>Warning:</strong> This action cannot be undone. All data associated with this alumni profile will be permanently deleted.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Alumni Information Preview -->
-            <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 mb-8 border border-purple-100">
-                <h3 class="text-lg font-semibold text-org-secondary mb-4">Profile to be deleted:</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <span class="font-medium text-org-secondary">Name:</span>
-                        <span class="text-gray-900">{{ alumni.first_name }} {{ alumni.last_name }}</span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-org-secondary">Email:</span>
-                        <span class="text-gray-900">{{ alumni.email }}</span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-org-secondary">Course:</span>
-                        <span class="text-gray-900">{{ alumni.course_studied|default:"Not specified" }}</span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-org-secondary">Graduation Year:</span>
-                        <span class="text-gray-900">{{ alumni.graduation_year|default:"Not specified" }}</span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-org-secondary">Employment Status:</span>
-                        <span class="text-gray-900">{{ alumni.get_employment_status_display|default:"Not specified" }}</span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-org-secondary">Company:</span>
-                        <span class="text-gray-900">{{ alumni.company_name|default:"Not specified" }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex space-x-4">
-                <a href="{% url 'alumni_list' %}" class="flex-1 text-center bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-md hover:bg-gray-300 transition-colors">
-                    Cancel
-                </a>
-                <form method="POST" class="flex-1">
-                    {% csrf_token %}
-                    <button type="submit"
-                        class="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-red-700 transition-colors shadow-lg">
-                        Delete Profile
-                    </button>
-                </form>
             </div>
         </div>
-    </main>
 
-</body>
-</html> 
+        <div class="bg-gray-50 border border-gray-100 rounded-lg p-5 mb-8">
+            <h2 class="text-sm font-semibold text-gray-900 mb-3">Profile to be deleted</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div><span class="text-gray-500">Name:</span> <span class="text-gray-900">{{ alumni.first_name }} {{ alumni.last_name }}</span></div>
+                <div><span class="text-gray-500">Email:</span> <span class="text-gray-900">{{ alumni.email }}</span></div>
+                <div><span class="text-gray-500">Course:</span> <span class="text-gray-900">{{ alumni.course_studied|default:"Not specified" }}</span></div>
+                <div><span class="text-gray-500">Graduation year:</span> <span class="text-gray-900">{{ alumni.graduation_year|default:"Not specified" }}</span></div>
+                <div><span class="text-gray-500">Employment:</span> <span class="text-gray-900">{{ alumni.get_employment_status_display|default:"Not specified" }}</span></div>
+                <div><span class="text-gray-500">Company:</span> <span class="text-gray-900">{{ alumni.company_name|default:"Not specified" }}</span></div>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <a href="{% url 'alumni_list' %}" class="btn-secondary flex-1">Cancel</a>
+            <form method="POST" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger w-full">Delete Profile</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
