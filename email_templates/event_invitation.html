@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alumni Event Invitation</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+            max-width: 150px;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+        }
+
+        .event-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 25px 0;
+        }
+
+        .event-image {
+            width: 100%;
+            height: auto;
+            max-height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .event-details {
+            padding: 20px;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .event-meta-item {
+            margin-right: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .event-meta-icon {
+            color: #5e35b1;
+            margin-right: 5px;
+            width: 16px;
+            text-align: center;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Replace with your organization's logo -->
+            <img src="https://placehold.co/150x50/8e24aa/FFFFFF?text=HDMF+Logo" alt="Henry Djaba Memorial Foundation"
+                class="logo">
+            <h1>You're Invited!</h1>
+        </div>
+
+        <div class="content">
+            <p>Hello {{user.first_name}},</p>
+
+            <p>We're excited to invite you to our upcoming alumni event:</p>
+
+            <div class="event-card">
+                <!-- Replace with event image URL -->
+                <img src="https://placehold.co/600x200/8e24aa/FFFFFF?text=Event+Image" alt="{{event.title}}"
+                    class="event-image">
+
+                <div class="event-details">
+                    <h2>{{event.title}}</h2>
+
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon">📅</span> {{event.date}}
+                        </div>
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon">🕒</span> {{event.time}}
+                        </div>
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon">📍</span> {{event.location}}
+                        </div>
+                    </div>
+
+                    <p>{{event.description}}</p>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="{{event.registration_link}}" class="button">Register Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <p>This is a great opportunity to reconnect with fellow alumni, expand your professional network, and learn
+                from industry experts.</p>
+
+            <p>Spots are limited, so be sure to register early!</p>
+
+            <p>
+                Looking forward to seeing you there,<br>
+                The Henry Djaba Memorial Foundation Team
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; {{current_year}} Henry Djaba Memorial Foundation. All rights reserved.</p>
+            <p>To unsubscribe from event invitations, <a href="{{unsubscribe_link}}" style="color: #5e35b1;">click
+                    here</a>.</p>
+        </div>
+    </div>
+</body>
+
+</html>

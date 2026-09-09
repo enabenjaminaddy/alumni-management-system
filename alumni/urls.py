@@ -28,6 +28,7 @@ urlpatterns = [
     path('org-admin/alumni/<int:alumni_id>/edit/', views.edit_alumni, name='edit_alumni'),
     path('org-admin/alumni/<int:alumni_id>/delete/', views.delete_alumni, name='delete_alumni'),
     path('org-admin/bulk-operations/', views.bulk_operations, name='bulk_operations'),
+<<<<<<< HEAD
 
     path('announcements/', views.announcements_list, name='announcements_list'),
     path('announcements/new/', views.announcement_create, name='announcement_create'),
@@ -64,3 +65,28 @@ urlpatterns = [
         name='password_reset_complete',
     ),
 ]
+=======
+    # path('alumni/bulk-operations/', views.bulk_operations, name='bulk_operations'),
+    
+    path('login/', AlumniLoginView.as_view(), name='login'),
+    path('logout/', AlumniLogoutView.as_view(), name='logout'),
+    
+    # Password Reset URLs - Using SendGrid Template
+    path('password-reset/', 
+         SendGridPasswordResetView.as_view(
+             template_name='alumni/password_reset.html',
+             email_template_name='alumni/password_reset_email.html',
+             subject_template_name='alumni/password_reset_subject.txt'
+         ), 
+         name='password_reset'),
+    path('password-reset/done/', 
+         PasswordResetDoneView.as_view(template_name='alumni/password_reset_done.html'), 
+         name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', 
+         PasswordResetConfirmView.as_view(template_name='alumni/password_reset_confirm.html'), 
+         name='password_reset_confirm'),
+    path('reset/done/', 
+         PasswordResetCompleteView.as_view(template_name='alumni/password_reset_complete.html'), 
+         name='password_reset_complete'),
+]
+>>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb

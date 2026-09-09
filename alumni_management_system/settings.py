@@ -49,11 +49,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'alumni'
+    'alumni',
+    # 'sslserver'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -88,24 +90,42 @@ WSGI_APPLICATION = 'alumni_management_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # SQLite Configuration (temporarily for testing role system)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # PostgreSQL (production): set DATABASE_URL-style env vars when switching.
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
+<<<<<<< HEAD
 #         "NAME": os.environ.get("POSTGRES_DB", "alumni"),
 #         "USER": os.environ.get("POSTGRES_USER", "postgres"),
 #         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
 #         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
 #         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+=======
+#         "NAME": os.getenv('DB_NAME'),
+#         "USER": os.getenv('USER'),
+#         "PASSWORD": os.getenv('DB_PASSWORD'),
+#         "HOST": os.getenv('DB_HOST'),
+#         "PORT": "5432",
+>>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
 #     }
 # }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "alumni",
+        "USER": "postgres",
+        "PASSWORD": "Postgres.ayadata.21",
+        "HOST": "3.232.163.161",
+        "PORT": "5432",
+    }
+}
 
 
 # Password validation
@@ -142,7 +162,40 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# Static files configuration for production
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security settings for production
+if not DEBUG:
+    # HTTPS settings
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    
+    # HSTS settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    
+    # CSRF settings
+    CSRF_TRUSTED_ORIGINS = [
+        'https://alumni-management-system-h0qp.onrender.com',
+        'https://alumni.henrydjabamemorialfdn.org.gh'
+    ]
+    
+    # Content security
+    SECURE_REFERRER_POLICY = 'same-origin'
+    SECURE_BROWSER_XSS_FILTER = True
+else:
+    # Development settings
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_PRELOAD = False
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
@@ -159,10 +212,29 @@ LOGOUT_URL = '/logout'
 # LOGOUT_REDIRECT_URL = '/login/'
 
 # Email settings for password reset
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+# Try to use SendGrid, but fall back to console backend if not available
+try:
+    import sendgrid_backend
+    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+    print("Using SendGrid email backend")
+except ImportError:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("SendGrid not available, using console email backend")
+
+# Add sendgrid_backend to installed apps if available
+try:
+    import sendgrid_backend
+    INSTALLED_APPS.append('sendgrid_backend')
+    print("Added sendgrid_backend to INSTALLED_APPS")
+except ImportError:
+    print("sendgrid_backend not installed, skipping app registration")
+
+# SendGrid API key - prefer environment variable but fall back to direct setting if needed
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
+# Set to True to ensure subjects are explicitly set in code rather than from templates
+# This helps ensure emails have proper subjects and don't go to spam
+SENDGRID_TEMPLATE_SUBJECT_OVERRIDE = True
 
 # Set to False in production to actually send emails
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
@@ -172,8 +244,25 @@ SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS_HTML = True
 SENDGRID_ECHO_TO_STDOUT = True # Prints email content to console in DEBUG mode
 
+<<<<<<< HEAD
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
     'Alumni Management System <noreply@example.com>',
 )
 EMAIL_SUBJECT_PREFIX = '[Alumni Portal] '
+=======
+# Keep your existing email address configuration
+DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <info@henrydjabamemorialfdn.org.gh>'
+EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+
+# For development - emails will be printed to console
+# For production, configure these with your email provider:
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
+
+# DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
+# EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+>>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
