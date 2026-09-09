@@ -1,0 +1,50 @@
+{% extends 'alumni/base.html' %}
+
+{% block title %}Announcements - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Updates</h1>
+        <p class="text-gray-600 mt-1">Program news, deadlines, and opportunities.</p>
+    </div>
+    {% if is_admin %}
+    <a href="{% url 'announcement_create' %}" class="btn-primary">+ New</a>
+    {% endif %}
+</div>
+
+<div class="space-y-4 max-w-3xl">
+    {% for a in page_obj %}
+    <article class="bg-white border border-gray-200 rounded-lg p-5 hover:border-org-secondary transition">
+        <div class="flex justify-between items-start gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-wide font-semibold text-org-secondary">{{ a.get_category_display }}</p>
+                <h2 class="text-lg font-semibold mt-1">
+                    <a href="{% url 'announcement_detail' a.pk %}" class="text-gray-900 hover:text-org-secondary">{{ a.title }}</a>
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">{{ a.created_at|date:"M j, Y" }}</p>
+                <p class="text-gray-600 mt-2 line-clamp-2">{{ a.body|truncatewords:40 }}</p>
+            </div>
+            {% if is_admin and not a.is_published %}
+            <span class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded shrink-0">Draft</span>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center text-gray-500 text-sm">
+        No announcements yet.
+    </div>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="mt-6 flex gap-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn-secondary">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="btn-secondary">Next</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'alumni/base.html' %}
+
+{% block title %}Mentorship Overview - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Mentorship overview</h1>
+    <p class="text-gray-600 mt-1">{{ mentor_pool }} alumni marked interest in mentoring.</p>
+</div>
+
+<form method="get" class="mb-4">
+    <label for="status" class="form-label">Filter by status</label>
+    <select name="status" id="status" onchange="this.form.submit()" class="form-input max-w-xs">
+        <option value="">All statuses</option>
+        <option value="pending"{% if status_filter == 'pending' %} selected{% endif %}>Pending</option>
+        <option value="accepted"{% if status_filter == 'accepted' %} selected{% endif %}>Accepted</option>
+        <option value="declined"{% if status_filter == 'declined' %} selected{% endif %}>Declined</option>
+    </select>
+</form>
+
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mentee</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mentor</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for req in requests %}
+                <tr>
+                    <td class="px-4 py-3">{{ req.mentee }}</td>
+                    <td class="px-4 py-3">{{ req.mentor }}</td>
+                    <td class="px-4 py-3">{{ req.get_status_display }}</td>
+                    <td class="px-4 py-3">{{ req.created_at|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">No mentorship requests.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

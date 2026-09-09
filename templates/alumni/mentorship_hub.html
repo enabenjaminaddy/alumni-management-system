@@ -1,0 +1,73 @@
+{% extends 'alumni/base.html' %}
+
+{% block title %}Mentorship - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Mentorship</h1>
+    <p class="text-gray-600 mt-1">Request a mentor or respond to incoming requests.</p>
+</div>
+
+<div class="max-w-3xl space-y-6">
+    {% if incoming %}
+    <section class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Incoming requests</h2>
+        <ul class="space-y-4">
+            {% for req in incoming %}
+            <li class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                <div>
+                    <p class="font-medium text-gray-900">{{ req.mentee.first_name }} {{ req.mentee.last_name }}</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ req.message|default:"No message" }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ req.get_status_display }} · {{ req.created_at|date:"M j, Y" }}</p>
+                </div>
+                {% if req.status == 'pending' %}
+                <div class="flex gap-2 shrink-0">
+                    <form method="post" action="{% url 'mentorship_respond' req.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit" class="btn-primary text-sm">Accept</button>
+                    </form>
+                    <form method="post" action="{% url 'mentorship_respond' req.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="decline">
+                        <button type="submit" class="btn-secondary text-sm">Decline</button>
+                    </form>
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <section class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Request a mentor</h2>
+        <p class="text-sm text-gray-600 mb-4">Choose someone who marked interest in mentoring.</p>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="text-sm text-red-600 mt-1">{{ field.errors }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary">Send request</button>
+        </form>
+    </section>
+
+    <section class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Your outgoing requests</h2>
+        <ul class="space-y-2 text-sm">
+            {% for req in outgoing %}
+            <li class="flex justify-between border-b border-gray-100 py-2 last:border-0">
+                <span class="text-gray-900">{{ req.mentor.first_name }} {{ req.mentor.last_name }}</span>
+                <span class="text-gray-500">{{ req.get_status_display }}</span>
+            </li>
+            {% empty %}
+            <li class="text-gray-500">No requests yet.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+{% endblock %}

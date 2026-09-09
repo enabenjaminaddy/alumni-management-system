@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alumni Management System{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% include 'alumni/base_styles.html' %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50">
+    {% include 'alumni/_nav.html' %}
+
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        {% include 'alumni/_messages.html' %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <div id="modalIcon" class="modal-icon">
+                <svg id="modalIconSvg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+            </div>
+            <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-2"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-6"></p>
+            <div id="modalButtons" class="flex space-x-3 justify-center"></div>
+        </div>
+    </div>
+
+    <script>
+        class CustomModal {
+            constructor() {
+                this.modal = document.getElementById('customModal');
+                this.icon = document.getElementById('modalIcon');
+                this.iconSvg = document.getElementById('modalIconSvg');
+                this.title = document.getElementById('modalTitle');
+                this.message = document.getElementById('modalMessage');
+                this.buttons = document.getElementById('modalButtons');
+            }
+            show(type, title, message, buttons = []) {
+                this.setIcon(type);
+                this.title.textContent = title;
+                this.message.textContent = message;
+                this.setButtons(buttons);
+                this.modal.classList.add('active');
+                return new Promise((resolve) => { this.resolve = resolve; });
+            }
+            hide() {
+                this.modal.classList.remove('active');
+                if (this.resolve) this.resolve(false);
+            }
+            setIcon(type) {
+                this.icon.className = `modal-icon ${type}`;
+                const paths = {
+                    success: 'M5 13l4 4L19 7',
+                    error: 'M6 18L18 6M6 6l12 12',
+                    warning: 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                    info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                };
+                this.iconSvg.querySelector('path').setAttribute('d', paths[type]);
+            }
+            setButtons(buttons) {
+                this.buttons.innerHTML = '';
+                buttons.forEach(button => {
+                    const btn = document.createElement('button');
+                    btn.textContent = button.text;
+                    btn.className = button.primary
+                        ? 'px-4 py-2 bg-org-primary text-white rounded-lg hover:bg-org-primary-dark transition-colors'
+                        : 'px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors';
+                    btn.onclick = () => {
+                        this.modal.classList.remove('active');
+                        if (this.resolve) this.resolve(button.value);
+                    };
+                    this.buttons.appendChild(btn);
+                });
+            }
+        }
+        if (!window.modalInitialized) {
+            const modal = new CustomModal();
+            window.modalInitialized = true;
+            window.customAlert = (message, title = 'Notice') =>
+                modal.show('info', title, message, [{ text: 'OK', primary: true, value: true }]);
+            window.customConfirm = (message, title = 'Confirm') =>
+                modal.show('warning', title, message, [
+                    { text: 'Cancel', primary: false, value: false },
+                    { text: 'Confirm', primary: true, value: true }
+                ]);
+            window.customSuccess = (message, title = 'Success') =>
+                modal.show('success', title, message, [{ text: 'OK', primary: true, value: true }]);
+            window.customError = (message, title = 'Error') =>
+                modal.show('error', title, message, [{ text: 'OK', primary: true, value: true }]);
+            document.getElementById('customModal').addEventListener('click', function (e) {
+                if (e.target === this) modal.hide();
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

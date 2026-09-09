@@ -1,0 +1,56 @@
+{% load static %}
+<header class="foundation-gradient shadow">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between gap-4">
+            <div class="flex items-center gap-6 min-w-0">
+                <div class="text-white shrink-0">
+                    <a href="{% if user_role == 'organization_admin' or user_role == 'system_admin' %}{% url 'org_admin_dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="text-lg font-bold text-white hover:opacity-90">
+                        Alumni Management System
+                    </a>
+                    <p class="text-xs text-white/80 hidden sm:block">
+                        {% if user_role == 'organization_admin' or user_role == 'system_admin' %}
+                            Admin
+                        {% else %}
+                            Alumni Portal
+                        {% endif %}
+                    </p>
+                </div>
+                <nav class="hidden md:flex items-center gap-1 overflow-x-auto">
+                    {% if user_role == 'organization_admin' or user_role == 'system_admin' %}
+                        <a href="{% url 'org_admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'org_admin_dashboard' %}active{% endif %}">Dashboard</a>
+                        <a href="{% url 'alumni_list' %}" class="nav-link {% if request.resolver_match.url_name == 'alumni_list' or request.resolver_match.url_name == 'add_alumni' or request.resolver_match.url_name == 'edit_alumni' %}active{% endif %}">Alumni</a>
+                        <a href="{% url 'import_alumni_csv' %}" class="nav-link {% if request.resolver_match.url_name == 'import_alumni_csv' %}active{% endif %}">Import</a>
+                        <a href="{% url 'announcements_list' %}" class="nav-link {% if 'announcement' in request.resolver_match.url_name %}active{% endif %}">Announcements</a>
+                        <a href="{% url 'mentorship_admin' %}" class="nav-link {% if request.resolver_match.url_name == 'mentorship_admin' %}active{% endif %}">Mentorship</a>
+                    {% else %}
+                        <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                        <a href="{% url 'announcements_list' %}" class="nav-link {% if 'announcement' in request.resolver_match.url_name %}active{% endif %}">Updates</a>
+                        <a href="{% url 'mentorship_hub' %}" class="nav-link {% if request.resolver_match.url_name == 'mentorship_hub' %}active{% endif %}">Mentorship</a>
+                        <a href="{% url 'edit_form' %}" class="nav-link {% if request.resolver_match.url_name == 'edit_form' %}active{% endif %}">Edit profile</a>
+                    {% endif %}
+                </nav>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                {% if user.is_authenticated %}
+                <span class="text-sm text-white/90 hidden sm:inline truncate max-w-[10rem]">{{ user.first_name|default:user.username }}</span>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="bg-white/20 text-white text-sm font-semibold py-1.5 px-3 rounded-md hover:bg-white/30">Logout</a>
+            </div>
+        </div>
+        {# mobile nav #}
+        <nav class="md:hidden flex gap-1 pb-3 overflow-x-auto">
+            {% if user_role == 'organization_admin' or user_role == 'system_admin' %}
+                <a href="{% url 'org_admin_dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'alumni_list' %}" class="nav-link">Alumni</a>
+                <a href="{% url 'import_alumni_csv' %}" class="nav-link">Import</a>
+                <a href="{% url 'announcements_list' %}" class="nav-link">Announcements</a>
+                <a href="{% url 'mentorship_admin' %}" class="nav-link">Mentorship</a>
+            {% else %}
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'announcements_list' %}" class="nav-link">Updates</a>
+                <a href="{% url 'mentorship_hub' %}" class="nav-link">Mentorship</a>
+                <a href="{% url 'edit_form' %}" class="nav-link">Profile</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>

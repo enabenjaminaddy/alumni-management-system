@@ -1,0 +1,26 @@
+{% extends 'alumni/base.html' %}
+
+{% block title %}{{ announcement.title }} - Alumni Management System{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl">
+    <a href="{% url 'announcements_list' %}" class="text-sm font-medium text-org-secondary hover:underline">← All announcements</a>
+
+    <p class="text-xs uppercase tracking-wide font-semibold text-org-secondary mt-6">{{ announcement.get_category_display }}</p>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2">{{ announcement.title }}</h1>
+    <p class="text-sm text-gray-500 mt-2">{{ announcement.created_at|date:"F j, Y" }}</p>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6 mt-6 whitespace-pre-wrap text-gray-800">{{ announcement.body }}</div>
+
+    {% if is_admin %}
+    <div class="mt-6 flex gap-3">
+        <a href="{% url 'announcement_edit' announcement.pk %}" class="btn-primary">Edit</a>
+        <form method="post" action="{% url 'announcement_delete' announcement.pk %}"
+            onsubmit="return confirm('Delete this announcement?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Delete</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
