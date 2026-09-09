@@ -1,4 +1,3 @@
-from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm as BasePasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
@@ -27,6 +26,7 @@ class AlumniProfileForm(forms.ModelForm):
     """Form for alumni profile data"""
     class Meta:
         model = AlumniProfile
+<<<<<<< HEAD
 <<<<<<< HEAD
         fields = [
             'profile_picture', 'first_name', 'last_name', 'current_address', 'phone_number',
@@ -118,6 +118,8 @@ class CSVImportForm(forms.Form):
         widget=forms.ClearableFileInput(attrs={'class': 'text-sm', 'accept': '.csv'}),
     )
 =======
+=======
+>>>>>>> new-features
         fields = '__all__'  # You can customize this later
 
 
@@ -215,4 +217,7 @@ class SendGridPasswordResetForm(BasePasswordResetForm):
             subject_template_name, email_template_name, context, 
             from_email, to_email, html_email_template_name
         )
+<<<<<<< HEAD
 >>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
+=======
+>>>>>>> new-features

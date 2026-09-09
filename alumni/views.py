@@ -33,11 +33,21 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
 from django.utils.crypto import get_random_string
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+from django.views.decorators.http import require_POST
+=======
+>>>>>>> new-features
 # SendGrid imports
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, To, TemplateId, Substitution
 from django.conf import settings
 from alumni.sendgrid_templates import TEMPLATE_IDS
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> new-features
 
 # Create your views here.
 @login_required
@@ -588,7 +598,11 @@ def _send_alumni_invitation(request, alumni):
             'activation_link': activation_link,
         })
         send_mail(email_subject, email_body, settings.DEFAULT_FROM_EMAIL, [alumni.email])
+<<<<<<< HEAD
 >>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
+=======
+>>>>>>> origin/main
+>>>>>>> new-features
     
     # 5. Return a success status and message
     return (True, f"Successfully {action_message} to {alumni.first_name} {alumni.last_name}.")

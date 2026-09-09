@@ -1,13 +1,8 @@
 from django.urls import path
-from django.views.generic import RedirectView
 from alumni import views
 from alumni.views import AlumniLoginView, AlumniLogoutView
-from django.contrib.auth.views import (
-    PasswordResetView,
-    PasswordResetDoneView,
-    PasswordResetConfirmView,
-    PasswordResetCompleteView,
-)
+from django.contrib.auth.views import LogoutView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from alumni.password_reset import SendGridPasswordResetView
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='login', permanent=False)),
@@ -89,4 +84,8 @@ urlpatterns = [
          PasswordResetCompleteView.as_view(template_name='alumni/password_reset_complete.html'), 
          name='password_reset_complete'),
 ]
+<<<<<<< HEAD
 >>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
+=======
+>>>>>>> origin/main
+>>>>>>> new-features

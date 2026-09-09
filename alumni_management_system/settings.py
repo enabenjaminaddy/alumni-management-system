@@ -113,7 +113,11 @@ WSGI_APPLICATION = 'alumni_management_system.wsgi.application'
 #         "PASSWORD": os.getenv('DB_PASSWORD'),
 #         "HOST": os.getenv('DB_HOST'),
 #         "PORT": "5432",
+<<<<<<< HEAD
 >>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
+=======
+>>>>>>> origin/main
+>>>>>>> new-features
 #     }
 # }
 DATABASES = {
@@ -265,4 +269,8 @@ EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
 
 # DEFAULT_FROM_EMAIL = 'Henry Djaba Memorial Foundation <noreply@henrydjaba.org>'
 # EMAIL_SUBJECT_PREFIX = '[HDMF Alumni Portal] '
+<<<<<<< HEAD
 >>>>>>> 823cd9a1f049d4ba3da43adb895bd692246c80fb
+=======
+>>>>>>> origin/main
+>>>>>>> new-features
